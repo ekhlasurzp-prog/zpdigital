@@ -126,7 +126,7 @@ ${head('সংগঠন পরিচিতি',`<div class="split"><div><p>ZP Di
 ${head('দ্রুত প্রবেশ',`<div class="grid">${PAGES.slice(1,7).map(p=>`<a class="card qa" href="#${p[0]}"><b>${p[1]}</b><span>${{'/about':'লক্ষ্য ও পরিচয়','/leaders':'নেতৃবৃন্দের পরিচিতি','/committees':'কমিটি ও সদস্য','/library':'ডিজিটাল বই','/events':'অনুষ্ঠানসূচি','/videos':'ভিডিও ও প্রোগ্রাম','/announcements':'গুরুত্বপূর্ণ ঘোষণা'}[p[0]]}</span></a>`).join('')}</div>`)+end}
 ${head('নির্বাচিত বই',note+list(D.book.slice(0,3)))+end}
 ${head('আসন্ন ইভেন্ট',list(D.event.slice(0,3)))+end}
-${head('সাম্প্রতিক ভিডিও',list(D.video.slice(0,3)))+end}
+${recentVideos()}
 ${head('গুরুত্বপূর্ণ ঘোষণা',list(D.ann.slice(0,3)))+end}`},
 "/about"(){const live=LIVE&&ORGP.length;
  const txt=live?ORGP.map((x,i)=>`<details class="og"${i===0?' open':''}><summary>${esc(x.t)}</summary><div class="in dt">${md(x.full)}</div></details>`).join(''):'<p><i>[সংগঠনের যাচাইকৃত পরিচিতি, লক্ষ্য ও ইতিহাস এখানে যোগ হবে।]</i></p>';
@@ -162,6 +162,7 @@ try{sb=window.supabase.createClient(SB_URL,SB_KEY)}catch(e){console.error(e)}
 const su=u=>/^https?:\/\//i.test(u||'')?u:'';
 const fd=v=>v?new Date(v).toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'}):'';
 const ROLE={super_admin:'প্রধান প্রশাসক',editor:'সম্পাদক',contributor:'অবদানকারী'};
+const PGN={...Object.fromEntries(PAGES.map(p=>[p[0],p[1]])),'/search':'অনুসন্ধান','/view/book':'বই (বিস্তারিত)','/view/video':'ভিডিও (বিস্তারিত)','/view/leader':'নেতা (বিস্তারিত)','/view/committee':'কমিটি (বিস্তারিত)','/view/event':'ইভেন্ট (বিস্তারিত)','/view/ann':'ঘোষণা (বিস্তারিত)'};
 const STL={draft:'খসড়া',pending:'অনুমোদনের অপেক্ষায়',published:'প্রকাশিত',archived:'আর্কাইভ'};
 let SITE={contacts:'',loaded:false,name:'ZP Digital',slogan:'সত্য তরিকার প্রচারে ZP Digital।'};
 try{const c=JSON.parse(localStorage.getItem('zpsite')||'null');if(c){SITE.name=c.name||SITE.name;SITE.slogan=c.slogan||SITE.slogan;if(su(c.logo))IMG.logo=c.logo;SITE.contacts=c.contacts||'';SITE.loaded=!!c.loaded}}catch(e){}
@@ -179,11 +180,19 @@ document.querySelectorAll('.brand span').forEach(e=>e.textContent=SITE.name);
 async function loadSite(){try{const r=await sb.from('site_settings').select('*').eq('id',1).maybeSingle();
  if(r.data){SITE.name=r.data.site_name||SITE.name;SITE.slogan=r.data.slogan||SITE.slogan;if(su(r.data.logo_url))IMG.logo=r.data.logo_url;SITE.contacts=r.data.contacts||'';SITE.loaded=true;
   localStorage.setItem('zpsite',JSON.stringify({name:SITE.name,slogan:SITE.slogan,logo:r.data.logo_url||'',contacts:SITE.contacts,loaded:true}))}applySite()}catch(e){}}
+const plain=s=>String(s||'').replace(/\*\*/g,'').replace(/#{1,6}\s*/g,'');
+function recentVideos(){if(!LIVE)return head('সাম্প্রতিক ভিডিও',list(D.video.slice(0,4)))+end;
+ const cut=Date.now()-48*36e5,r=D.video.filter(v=>v.pub&&new Date(v.pub)>=cut).sort((a,b)=>new Date(b.pub)-new Date(a.pub)).slice(0,4);
+ return r.length?head('সাম্প্রতিক ভিডিও',list(r)+'<p><a class="btn o" href="#/videos">সব ভিডিও দেখুন</a></p>')+end:''}
+function track(){if(!sb)return;try{if(location.hash.startsWith('#/admin')||(typeof A!=='undefined'&&A.user))return;
+ let id=localStorage.getItem('zpv');if(!id){id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2);localStorage.setItem('zpv',id)}
+ const p=(location.hash.slice(1).split('?')[0]||'/').split('/').slice(0,3).join('/').slice(0,60)||'/';
+ sb.from('site_visits').insert({visitor:id,path:p}).then(()=>{},()=>{})}catch(e){}}
 const yid=u=>{const m=/(?:youtu\.be\/|youtube\.com\/(?:live\/|embed\/|shorts\/)|[?&]v=)([A-Za-z0-9_-]{11})/.exec(u||'');return m?m[1]:''};
 const fdd=v=>v?new Date(v).toLocaleDateString('bn-BD',{dateStyle:'medium'}):'';
 function mapRow(k,r){const m={k,real:1,id:r.id,s:'',full:''};
  if(k==='book'){m.t=r.title;m.s=r.author||'';m.full=r.description||'';m.c=r.category;m.u=su(r.pdf_url);m.img=su(r.cover_url)}
- else if(k==='video'){m.t=r.title;m.s=fdd(r.video_date);m.full=r.description||'';m.u=su(r.youtube_url);const y=yid(r.youtube_url);m.img=su(r.thumbnail_url)||(y?'https://i.ytimg.com/vi/'+y+'/hqdefault.jpg':'')}
+ else if(k==='video'){m.pub=r.published_at;m.t=r.title;m.s=fdd(r.video_date);m.full=r.description||'';m.u=su(r.youtube_url);const y=yid(r.youtube_url);m.img=su(r.thumbnail_url)||(y?'https://i.ytimg.com/vi/'+y+'/hqdefault.jpg':'')}
  else if(k==='leader'){m.t=r.name;m.s=r.position||'';m.full=r.bio||'';m.img=su(r.photo_url)}
  else if(k==='committee'){m.t=r.name;m.org=r.org_group||'';m.lv=r.level||'';m.s=[r.org_group,r.level].filter(Boolean).join(' • ');m.full=r.description||'';m.u=su(r.pdf_url)}
  else if(k==='event'){m.t=r.title;m.s=[fd(r.starts_at),r.location].filter(Boolean).join(' • ');m.full=r.description||'';m.img=su(r.image_url)}
@@ -191,7 +200,7 @@ function mapRow(k,r){const m={k,real:1,id:r.id,s:'',full:''};
  m.d=[m.s,m.full].filter(Boolean).join(' — ');return m}
 const card=(x,i)=>{const h=x.real?`href="#/view/${x.k}/${x.id}"`:`href="#${LINK[x.k]}"`;
  const cv=x.img?`<div class="cov i" style="background-image:url('${esc(encodeURI(x.img).replace(/'/g,'%27'))}')" role="img" aria-label="${esc(x.t)}"></div>`:`<div class="cov ${x.k==='video'?'v':''}" aria-hidden="true">${x.k==='book'&&!x.real?(i+1).toLocaleString('bn-BD'):ICON[x.k]}</div>`;
- return `<a class="card" ${h}>${x.real?'':`<span class="tag">${PH}</span>`}${cv}<h3>${esc(x.t)}</h3>${x.s?`<p class="sub">${esc(x.s)}</p>`:''}${x.k==='leader'&&x.real?'':`<p class="cl">${esc(x.real?x.full:x.d)}</p>`}</a>`};
+ return `<a class="card" ${h}>${x.real?'':`<span class="tag">${PH}</span>`}${cv}<h3>${esc(x.t)}</h3>${x.s?`<p class="sub">${esc(x.s)}</p>`:''}${x.k==='leader'&&x.real?'':`<p class="cl">${esc(plain(x.real?x.full:x.d))}</p>`}</a>`};
 function md(s){let e=esc(s||'').replace(/\s+###\s+/g,'\n### ').replace(/\s-\s(?=\*\*)/g,'\n- ').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>'),o='',ul=false;
  for(const l of e.split('\n')){const t=l.trim();if(!t)continue;
   if(t.startsWith('- ')){if(!ul){o+='<ul>';ul=true}o+='<li>'+t.slice(2)+'</li>';continue}
@@ -265,11 +274,18 @@ function adminEdit(id){A.edit=A.rows.find(r=>r.id===id);A.msg='';adminRender()}
 async function adminDel(id){if(!confirm('মুছে ফেলবেন?'))return;const r=await sb.from(T[A.tab].tb).delete().eq('id',id);A.msg=r.error?'মুছতে পারেননি: '+r.error.message:'মুছে ফেলা হয়েছে।';adminRender();loadAll()}
 async function adminRender(){const el=$('#adm');if(!el)return;
  if(!A.user){el.innerHTML=`<h2>প্রশাসক প্রবেশ</h2>${A.msg?`<div class="note">${esc(A.msg)}</div>`:''}<form class="fm card" style="max-width:420px" onsubmit="adminLogin(event)"><label>ইমেইল<input name="email" type="email" autocomplete="username" required></label><label>পাসওয়ার্ড<input name="password" type="password" autocomplete="current-password" required></label><div class="bar2"><button class="btn">প্রবেশ করুন</button></div></form><form class="fm card" style="max-width:420px;margin-top:16px" onsubmit="adminSignup(event)"><h3>নতুন প্রশাসক নিবন্ধন</h3><p>কোনো প্রশাসক আপনাকে আগে যোগ করে থাকলে এখানে একই ইমেইল ও নিজের নতুন পাসওয়ার্ড দিন।</p><label>ইমেইল<input name="email" type="email" required></label><label>পাসওয়ার্ড (অন্তত ৮ অক্ষর)<input name="password" type="password" minlength="8" autocomplete="new-password" required></label><div class="bar2"><button class="btn o">নিবন্ধন করুন</button></div></form>`;return}
- let h=`<h2>প্রশাসক প্যানেল</h2><p>${esc(A.name)} — ${ROLE[A.role]} <button class="btn o" style="min-height:40px" onclick="adminOut()">লগ আউট</button></p><div class="filters">`+Object.keys(T).map(k=>`<button aria-pressed="${A.tab===k}" onclick="A.tab='${k}';A.edit=undefined;A.msg='';adminRender()">${T[k].l}</button>`).join('')+(['super_admin','editor'].includes(A.role)?`<button aria-pressed="${A.tab==='adm'}" onclick="A.tab='adm';A.msg='';adminRender()">প্রশাসক</button>`:'')+(A.role==='super_admin'?`<button aria-pressed="${A.tab==='log'}" onclick="A.tab='log';A.msg='';adminRender()">অডিট লগ</button><button aria-pressed="${A.tab==='site'}" onclick="A.tab='site';A.msg='';adminRender()">সাইট সেটিংস</button>`:'')+'</div>'+(A.msg?`<div class="note">${esc(A.msg)}</div>`:'');
+ let h=`<h2>প্রশাসক প্যানেল</h2><p>${esc(A.name)} — ${ROLE[A.role]} <button class="btn o" style="min-height:40px" onclick="adminOut()">লগ আউট</button></p><div class="filters">`+Object.keys(T).map(k=>`<button aria-pressed="${A.tab===k}" onclick="A.tab='${k}';A.edit=undefined;A.msg='';adminRender()">${T[k].l}</button>`).join('')+(['super_admin','editor'].includes(A.role)?`<button aria-pressed="${A.tab==='adm'}" onclick="A.tab='adm';A.msg='';adminRender()">প্রশাসক</button><button aria-pressed="${A.tab==='stats'}" onclick="A.tab='stats';A.msg='';adminRender()">পরিসংখ্যান</button>`:'')+(A.role==='super_admin'?`<button aria-pressed="${A.tab==='log'}" onclick="A.tab='log';A.msg='';adminRender()">অডিট লগ</button><button aria-pressed="${A.tab==='site'}" onclick="A.tab='site';A.msg='';adminRender()">সাইট সেটিংস</button>`:'')+'</div>'+(A.msg?`<div class="note">${esc(A.msg)}</div>`:'');
  el.innerHTML=h+'<p>লোড হচ্ছে…</p>';
  if(A.tab==='log'){const r=await sb.from('audit_log').select('*').order('at',{ascending:false}).limit(50);
   h+=r.error?'<p>লগ দেখা যায়নি।</p>':'<div class="tw"><table><tr><th>সময়</th><th>কাজ</th><th>টেবিল</th><th>বিবরণ</th></tr>'+r.data.map(x=>`<tr><td>${esc(fd(x.at))}</td><td>${esc(x.action)}</td><td>${esc(x.table_name)}</td><td>${esc(((x.details&&(x.details.title||x.details.email))||'')+' ['+((x.details&&(x.details.status||x.details.role))||'')+']')}</td></tr>`).join('')+'</table></div>';el.innerHTML=h;return}
 
+ if(A.tab==='stats'){const r=await sb.rpc('visit_stats');
+  if(r.error){el.innerHTML=h+'<p>পরিসংখ্যান আনা যায়নি। আগে SQL চালান। ('+esc(r.error.message)+')</p>';return}
+  const d=r.data,n=x=>Number(x||0).toLocaleString('bn-BD'),mx=Math.max(1,...d.daily.map(x=>x.v));
+  el.innerHTML=h+`<div class="grid"><div class="card qa"><b>${n(d.online)}</b><span>এখন সাইটে (গত ৫ মিনিট)</span></div><div class="card qa"><b>${n(d.today_v)}</b><span>আজ আলাদা দর্শক • পাতা দেখা ${n(d.today_p)}</span></div><div class="card qa"><b>${n(d.w_v)}</b><span>গত ৭ দিনে দর্শক • পাতা দেখা ${n(d.w_p)}</span></div><div class="card qa"><b>${n(d.m_v)}</b><span>গত ৩০ দিনে দর্শক • পাতা দেখা ${n(d.m_p)}</span></div><div class="card qa"><b>${n(d.all_v)}</b><span>মোট আলাদা দর্শক • পাতা দেখা ${n(d.all_p)}</span></div></div><h3>গত ১৪ দিন (আলাদা দর্শক)</h3>`
+  +(d.daily.length?d.daily.map(x=>`<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span style="width:76px;font-size:13px">${esc(new Date(x.d).toLocaleDateString('bn-BD',{day:'numeric',month:'short'}))}</span><div style="background:var(--gold);height:14px;width:${Math.round(x.v/mx*70)}%;min-width:3px;border-radius:4px"></div><span>${n(x.v)}</span></div>`).join(''):'<p>এখনো তথ্য নেই।</p>')
+  +'<h3>জনপ্রিয় পাতা (৩০ দিন)</h3>'+(d.pages.length?'<div class="tw"><table><tr><th>পাতা</th><th>বার</th></tr>'+d.pages.map(x=>`<tr><td>${esc(PGN[x.path]||x.path)}</td><td>${n(x.n)}</td></tr>`).join('')+'</table></div>':'<p>এখনো তথ্য নেই।</p>')
+  +'<p style="color:var(--mut)">দর্শক গোনা হয় ব্রাউজারের একটি এলোমেলো কোড দিয়ে। নাম, ফোন নম্বর বা অবস্থান রাখা হয় না। একই ফোন ও ব্রাউজার একজন ধরা হয়। প্রশাসকদের নিজের দেখা গোনা হয় না।</p>';return}
  if(A.tab==='adm'){const [pr,iv]=await Promise.all([sb.from('profiles').select('*').order('created_at'),sb.from('admin_invites').select('*').order('created_at',{ascending:false})]);
   if(pr.error||iv.error){el.innerHTML=h+'<p>প্রশাসক তালিকা আনা যায়নি। আগে SQL চালান।</p>';return}
   A.inv=iv.data;const sa=A.role==='super_admin',opts=sa?['super_admin','editor','contributor']:['editor','contributor'],ro=sel=>opts.map(r=>`<option value="${r}"${r===sel?' selected':''}>${ROLE[r]}</option>`).join(''),link=location.origin+location.pathname+'#/admin';
@@ -288,7 +304,7 @@ async function adminRender(){const el=$('#adm');if(!el)return;
 $('#navl').innerHTML=PAGES.map(p=>`<li><a href="#${p[0]}">${p[1]}</a></li>`).join('');
 $('#fl').innerHTML=PAGES.slice(1).map(p=>`<a href="#${p[0]}">${p[1]}</a>`).join('');
 $('#mb').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#mb').setAttribute('aria-expanded',o)};
-applySite();addEventListener('hashchange',route);route();loadAll();
+applySite();addEventListener('hashchange',route);addEventListener('hashchange',track);route();loadAll();track();
 </script>
 </body>
 </html>
