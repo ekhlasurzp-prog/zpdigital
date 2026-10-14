@@ -80,6 +80,7 @@ footer img{width:56px;border-radius:14px}
 .cl{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.card p.sub,.dt p.sub{color:var(--gold);margin:0 0 4px}.cov.i{background-size:cover;background-position:center top;background-repeat:no-repeat}.grid.sm{grid-template-columns:repeat(2,1fr)}@media(min-width:700px){.grid.sm{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}}.grid.sm .cov{height:auto;aspect-ratio:3/4}.grid.sm .card{padding:10px}.grid.sm h3{font-size:16px}.dt h3{color:var(--hd)}.dt iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:12px;margin:8px 0 16px;display:block}.dimg{width:100%;max-width:min(100%,560px);border-radius:12px;border:3px solid #e9d27a;display:block;margin:0 0 14px}.dt a{color:var(--gold)}.dt .btn{color:#fff}
 details.og{border:1px solid var(--line);border-radius:12px;margin:0 0 12px;background:var(--card)}details.og summary{padding:14px 16px;font:700 18px var(--ser);color:#fff;cursor:pointer;min-height:48px}details.og .in{padding:0 12px 12px}.lv{color:var(--gold);margin:14px 0 8px;font-size:16px}
 #fct a{display:inline;padding:0}.card p a{color:var(--gold)}
+.grid.sm.vd .cov{aspect-ratio:16/9;margin-bottom:8px}.grid.sm.vd h3{font-size:14px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.grid.sm.vd .cl{display:none}.grid.sm.vd p.sub{font-size:12px}@media(min-width:700px){.grid.sm.vd{grid-template-columns:repeat(4,1fr)}}
 </style>
 </head>
 <body>
@@ -181,9 +182,9 @@ async function loadSite(){try{const r=await sb.from('site_settings').select('*')
  if(r.data){SITE.name=r.data.site_name||SITE.name;SITE.slogan=r.data.slogan||SITE.slogan;if(su(r.data.logo_url))IMG.logo=r.data.logo_url;SITE.contacts=r.data.contacts||'';SITE.loaded=true;
   localStorage.setItem('zpsite',JSON.stringify({name:SITE.name,slogan:SITE.slogan,logo:r.data.logo_url||'',contacts:SITE.contacts,loaded:true}))}applySite()}catch(e){}}
 const plain=s=>String(s||'').replace(/\*\*/g,'').replace(/#{1,6}\s*/g,'');
-function recentVideos(){if(!LIVE)return head('সাম্প্রতিক ভিডিও',list(D.video.slice(0,4)))+end;
+function recentVideos(){if(!LIVE)return head('সাম্প্রতিক ভিডিও','<div class="grid sm vd">'+D.video.slice(0,4).map(card).join('')+'</div>')+end;
  const cut=Date.now()-48*36e5,r=D.video.filter(v=>v.pub&&new Date(v.pub)>=cut).sort((a,b)=>new Date(b.pub)-new Date(a.pub)).slice(0,4);
- return r.length?head('সাম্প্রতিক ভিডিও',list(r)+'<p><a class="btn o" href="#/videos">সব ভিডিও দেখুন</a></p>')+end:''}
+ return r.length?head('সাম্প্রতিক ভিডিও','<div class="grid sm vd">'+r.map(card).join('')+'</div><p style="margin-top:14px"><a class="btn o" href="#/videos">সব ভিডিও দেখুন</a></p>')+end:''}
 function track(){if(!sb)return;try{if(location.hash.startsWith('#/admin')||(typeof A!=='undefined'&&A.user))return;
  let id=localStorage.getItem('zpv');if(!id){id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2);localStorage.setItem('zpv',id)}
  const p=(location.hash.slice(1).split('?')[0]||'/').split('/').slice(0,3).join('/').slice(0,60)||'/';
