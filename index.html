@@ -77,6 +77,7 @@ footer img{width:56px;border-radius:14px}
 .copy{border-top:1px solid rgba(255,255,255,.18);margin-top:18px;padding-top:12px;font-size:14px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .fm label{display:block;margin:10px 0 4px}.fm input,.fm select,.fm textarea{width:100%;min-height:46px;border-radius:10px;border:1px solid var(--line);background:#0b1f15;color:#fff;padding:8px 12px;font:inherit}.fm textarea{min-height:110px}.bar2{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.tw{overflow-x:auto}.tw table{border-collapse:collapse;width:100%;font-size:14px}.tw td,.tw th{border:1px solid var(--line);padding:6px 8px;text-align:left}
+.cl{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.card p.sub,.dt p.sub{color:var(--gold);margin:0 0 4px}.cov.i{background-size:cover;background-position:center top;background-repeat:no-repeat}.grid.sm{grid-template-columns:repeat(2,1fr)}@media(min-width:700px){.grid.sm{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}}.grid.sm .cov{height:auto;aspect-ratio:3/4}.grid.sm .card{padding:10px}.grid.sm h3{font-size:16px}.dt h3{color:var(--hd)}.dt iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:12px;margin:8px 0 16px;display:block}.dimg{width:100%;max-width:min(100%,560px);border-radius:12px;border:3px solid #e9d27a;display:block;margin:0 0 14px}.dt a{color:var(--gold)}.dt .btn{color:#fff}
 </style>
 </head>
 <body>
@@ -111,7 +112,7 @@ const ICON={book:'📖',video:'▶',leader:'👤',committee:'👥',event:'📅',
 const LINK={book:'/library',video:'/videos',leader:'/leaders',committee:'/committees',event:'/events',ann:'/announcements'};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=s=>document.querySelector(s);
-const list=(a)=>a.length?`<div class="grid">${a.map(card).join('')}</div>`:'<div class="empty">এখানে এখনো কিছু নেই।</div>';
+const list=(a)=>a.length?`<div class="grid${a[0].k==='leader'?' sm':''}">${a.map(card).join('')}</div>`:'<div class="empty">এখানে এখনো কিছু নেই।</div>';
 let note='<div class="note">এই পাতার সব তথ্য নমুনা। যাচাইকৃত তথ্য প্রশাসক প্যানেল থেকে প্রকাশিত হলে এখানে দেখা যাবে।</div>';
 const head=(t,s)=>`<section class="s"><div class="wrap"><h2>${t}</h2><div class="div" aria-hidden="true">☾</div>${s||''}`;
 const end='</div></section>';
@@ -138,7 +139,7 @@ ${head('গুরুত্বপূর্ণ ঘোষণা',list(D.ann.slice(0
 return head('অনুসন্ধানের ফল',sform(q,ty)+`<p style="margin:14px 0">${t?esc(r.length)+' টি ফল পাওয়া গেছে:':'খোঁজার জন্য কিছু লিখুন।'} ${t?'<b>'+esc(q)+'</b>':''}</p>`+(t?list(r):''))+end}};
 function route(){
  const h=location.hash.slice(1)||'/';const [p,qs]=h.split('?');const U=new URLSearchParams(qs||'');const q=U.get('q')||'',ty=U.get('t')||'all';
- const f=R[p]||R['/'];$('#main').innerHTML=f(q,ty);
+ const vm=/^\/view\/(\w+)\/([\w-]+)$/.exec(p);const f=vm?()=>detail(vm[1],vm[2]):(R[p]||R['/']);$('#main').innerHTML=f(q,ty);
  document.querySelectorAll('#navl a').forEach(a=>a.getAttribute('href')==='#'+p?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
  const pg=PAGES.find(x=>x[0]===p);document.title=(p==='/search'?'অনুসন্ধান':pg?pg[1]:'ZP Digital')+' — ZP Digital';
  $('#nav').classList.remove('open');$('#mb').setAttribute('aria-expanded','false');window.scrollTo(0,0);
@@ -152,17 +153,28 @@ const su=u=>/^https?:\/\//i.test(u||'')?u:'';
 const fd=v=>v?new Date(v).toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'}):'';
 const ROLE={super_admin:'প্রধান প্রশাসক',editor:'সম্পাদক',contributor:'অবদানকারী'};
 const STL={draft:'খসড়া',pending:'অনুমোদনের অপেক্ষায়',published:'প্রকাশিত',archived:'আর্কাইভ'};
-function mapRow(k,r){const m={k,real:1};
- if(k==='book'){m.t=r.title;m.d=[r.author,r.description].filter(Boolean).join(' — ');m.c=r.category;m.u=su(r.pdf_url);m.img=su(r.cover_url)}
- else if(k==='video'){m.t=r.title;m.d=r.description||'';m.u=su(r.youtube_url);m.img=su(r.thumbnail_url)}
- else if(k==='leader'){m.t=r.name;m.d=[r.position,r.bio].filter(Boolean).join(' — ');m.img=su(r.photo_url)}
- else if(k==='committee'){const ms=(r.committee_members||[]).slice().sort((a,b)=>a.sort_order-b.sort_order).map(x=>x.name+(x.role_title?' ('+x.role_title+')':'')).join('، ');m.t=r.name;m.d=[r.description,ms&&'সদস্য: '+ms].filter(Boolean).join(' — ')}
- else if(k==='event'){m.t=r.title;m.d=[fd(r.starts_at),r.location,r.description].filter(Boolean).join(' — ')}
- else{m.t=r.title;m.d=r.body||''}
- return m}
-const card=(x,i)=>{const h=x.u?`href="${esc(x.u)}" target="_blank" rel="noopener"`:`href="#${LINK[x.k]}"`;
- const cv=x.img?`<div class="cov"><img src="${esc(x.img)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:10px"></div>`:`<div class="cov ${x.k==='video'?'v':''}" aria-hidden="true">${x.k==='book'&&!x.real?(i+1).toLocaleString('bn-BD'):ICON[x.k]}</div>`;
- return `<a class="card" ${h}>${x.real?'':`<span class="tag">${PH}</span>`}${cv}<h3>${esc(x.t)}</h3><p>${esc(x.d)}</p>${x.u?`<p style="color:var(--gold)">${x.k==='book'?'PDF পড়ুন':'দেখুন'}</p>`:''}</a>`};
+const yid=u=>{const m=/(?:youtu\.be\/|youtube\.com\/(?:live\/|embed\/|shorts\/)|[?&]v=)([A-Za-z0-9_-]{11})/.exec(u||'');return m?m[1]:''};
+const fdd=v=>v?new Date(v).toLocaleDateString('bn-BD',{dateStyle:'medium'}):'';
+function mapRow(k,r){const m={k,real:1,id:r.id,s:'',full:''};
+ if(k==='book'){m.t=r.title;m.s=r.author||'';m.full=r.description||'';m.c=r.category;m.u=su(r.pdf_url);m.img=su(r.cover_url)}
+ else if(k==='video'){m.t=r.title;m.s=fdd(r.video_date);m.full=r.description||'';m.u=su(r.youtube_url);const y=yid(r.youtube_url);m.img=su(r.thumbnail_url)||(y?'https://i.ytimg.com/vi/'+y+'/hqdefault.jpg':'')}
+ else if(k==='leader'){m.t=r.name;m.s=r.position||'';m.full=r.bio||'';m.img=su(r.photo_url)}
+ else if(k==='committee'){const ms=(r.committee_members||[]).slice().sort((a,b)=>a.sort_order-b.sort_order);m.t=r.name;m.s=ms.length?ms.length+' জন সদস্য':'';m.full=[r.description,ms.map(x=>'- **'+x.name+'**'+(x.role_title?' — '+x.role_title:'')).join('\n')].filter(Boolean).join('\n\n')}
+ else if(k==='event'){m.t=r.title;m.s=[fd(r.starts_at),r.location].filter(Boolean).join(' • ');m.full=r.description||'';m.img=su(r.image_url)}
+ else{m.t=r.title;m.full=r.body||'';m.img=su(r.image_url)}
+ m.d=[m.s,m.full].filter(Boolean).join(' — ');return m}
+const card=(x,i)=>{const h=x.real?`href="#/view/${x.k}/${x.id}"`:`href="#${LINK[x.k]}"`;
+ const cv=x.img?`<div class="cov i" style="background-image:url('${esc(encodeURI(x.img).replace(/'/g,'%27'))}')" role="img" aria-label="${esc(x.t)}"></div>`:`<div class="cov ${x.k==='video'?'v':''}" aria-hidden="true">${x.k==='book'&&!x.real?(i+1).toLocaleString('bn-BD'):ICON[x.k]}</div>`;
+ return `<a class="card" ${h}>${x.real?'':`<span class="tag">${PH}</span>`}${cv}<h3>${esc(x.t)}</h3>${x.s?`<p class="sub">${esc(x.s)}</p>`:''}${x.k==='leader'&&x.real?'':`<p class="cl">${esc(x.real?x.full:x.d)}</p>`}</a>`};
+function md(s){let e=esc(s||'').replace(/\s+###\s+/g,'\n### ').replace(/\s-\s(?=\*\*)/g,'\n- ').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>'),o='',ul=false;
+ for(const l of e.split('\n')){const t=l.trim();if(!t)continue;
+  if(t.startsWith('- ')){if(!ul){o+='<ul>';ul=true}o+='<li>'+t.slice(2)+'</li>';continue}
+  if(ul){o+='</ul>';ul=false}o+=t.startsWith('### ')?'<h3>'+t.slice(4)+'</h3>':'<p>'+t+'</p>'}
+ return o+(ul?'</ul>':'')}
+function detail(k,id){const x=(D[k]||[]).find(y=>y.id===id);
+ if(!x)return `<section class="s"><div class="wrap"><p>${LIVE?'এই পাতাটি পাওয়া যায়নি।':'লোড হচ্ছে…'}</p><p><a class="btn o" href="#${LINK[k]||'/'}">ফিরে যান</a></p></div></section>`;
+ const y=k==='video'?yid(x.u):'';
+ return `<section class="s dt"><div class="wrap"><p><a href="#${LINK[k]}">← ফিরে যান</a></p><h2>${esc(x.t)}</h2>${x.s?`<p class="sub">${esc(x.s)}</p>`:''}${y?`<iframe src="https://www.youtube-nocookie.com/embed/${y}" title="${esc(x.t)}" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`:x.img?`<img class="dimg" src="${esc(x.img)}" alt="${esc(x.t)}">`:''}${md(x.full)}${x.u?`<p><a class="btn" href="${esc(x.u)}" target="_blank" rel="noopener">${k==='book'?'PDF পড়ুন':'ইউটিউবে খুলুন'}</a></p>`:''}</div></section>`}
 async function loadAll(){if(!sb)return;try{
  const g=async(tb,o,sel='*')=>{const r=await sb.from(tb).select(sel).eq('status','published').order(o,{ascending:['sort_order','starts_at'].includes(o)});if(r.error)throw r.error;return r.data};
  const [b,v,l,c,e,a,o]=await Promise.all([g('books','published_at'),g('videos','published_at'),g('leaders','sort_order'),g('committees','published_at','*,committee_members(*)'),g('events','starts_at'),g('announcements','published_at'),g('org_pages','published_at')]);
@@ -174,8 +186,8 @@ const T={book:{tb:'books',l:'বই',n:'title',f:[['title','শিরোনা�
 video:{tb:'videos',l:'ভিডিও',n:'title',f:[['title','শিরোনাম'],['description','বিবরণ','ta'],['youtube_url','ইউটিউব লিংক'],['thumbnail_url','থাম্বনেইল','file:image/*'],['video_date','তারিখ','date']]},
 leader:{tb:'leaders',l:'নেতা',n:'name',f:[['name','নাম'],['position','পদবি'],['bio','পরিচিতি','ta'],['photo_url','ছবি','file:image/*'],['sort_order','ক্রম','number']]},
 committee:{tb:'committees',l:'কমিটি',n:'name',f:[['name','কমিটির নাম'],['description','বিবরণ','ta'],['members','সদস্য (প্রতি লাইনে: নাম | পদ)','members']]},
-event:{tb:'events',l:'ইভেন্ট',n:'title',f:[['title','শিরোনাম'],['description','বিবরণ','ta'],['location','স্থান'],['starts_at','শুরুর সময়','datetime-local']]},
-ann:{tb:'announcements',l:'ঘোষণা',n:'title',f:[['title','শিরোনাম'],['body','বিস্তারিত','ta']]},
+event:{tb:'events',l:'ইভেন্ট',n:'title',f:[['title','শিরোনাম'],['description','বিবরণ','ta'],['location','স্থান'],['image_url','ছবি','file:image/*'],['starts_at','শুরুর সময়','datetime-local']]},
+ann:{tb:'announcements',l:'ঘোষণা',n:'title',f:[['title','শিরোনাম'],['image_url','ছবি','file:image/*'],['body','বিস্তারিত','ta']]},
 org:{tb:'org_pages',l:'সংগঠন-তথ্য',n:'title',f:[['slug','স্লাগ (সংগঠন পাতার জন্য about লিখুন)'],['title','শিরোনাম'],['body','লেখা','ta']]}};
 const A={user:null,role:null,name:'',tab:'book',edit:undefined,msg:'',rows:[]};
 async function adminInit(){if(!$('#adm'))return;if(!sb){$('#adm').innerHTML='<h2>প্রশাসক প্যানেল</h2><p>সংযোগ লাইব্রেরি লোড হয়নি। ইন্টারনেট দেখে পাতা রিফ্রেশ করুন।</p>';return}
@@ -194,7 +206,7 @@ function formHtml(r){const t=T[A.tab],isC=A.role==='contributor',sts=isC?['draft
   else{let val=v;if(ty==='datetime-local'&&v){const d=new Date(v);val=new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,16)}
    h+=`<label>${l}<input name="${n}" type="${ty||'text'}" value="${esc(val)}"></label>`}}
  h+=`<label>অবস্থা<select name="status">${sts.map(s=>`<option value="${s}"${r&&r.status===s?' selected':''}>${STL[s]}</option>`).join('')}</select></label>${isC?'<p>অবদানকারী শুধু খসড়া বা অনুমোদনের জন্য জমা দিতে পারেন।</p>':''}<div class="bar2"><button class="btn">সংরক্ষণ</button><button type="button" class="btn o" onclick="A.edit=undefined;adminRender()">বাতিল</button></div></form>`;
- if(r&&A.tab!=='org')h+='<h3>প্রিভিউ</h3>'+card(mapRow(A.tab,r),0);return h}
+ if(r&&A.tab!=='org')h+='<h3>প্রিভিউ</h3>'+'<div style="pointer-events:none">'+card(mapRow(A.tab,r),0)+'</div>';return h}
 async function adminSave(e){e.preventDefault();const f=e.target,t=T[A.tab],o={};A.msg='';
  try{for(const [n,l,ty] of t.f){if(ty==='members')continue;let v=f[n].value;
   if(ty&&ty.startsWith('file:')){const fl=f[n+'_file'].files[0];if(fl){if(fl.size>52428800)throw new Error('ফাইল ৫০ MB-এর বেশি');const p=t.tb+'/'+Date.now()+'-'+fl.name.replace(/[^A-Za-z0-9._-]/g,'_');const u=await sb.storage.from('media').upload(p,fl,{contentType:fl.type});if(u.error)throw u.error;v=sb.storage.from('media').getPublicUrl(p).data.publicUrl}}
@@ -206,7 +218,7 @@ async function adminSave(e){e.preventDefault();const f=e.target,t=T[A.tab],o={};
    const rows=f.members.value.split('\n').map(x=>x.trim()).filter(Boolean).map((x,i)=>{const p=x.split('|');return{committee_id:id,name:p[0].trim(),role_title:(p[1]||'').trim()||null,sort_order:i}});
    if(rows.length){const n=await sb.from('committee_members').insert(rows);if(n.error)throw n.error}}
   A.edit=undefined;A.msg='সংরক্ষণ হয়েছে।'}catch(x){A.msg='সংরক্ষণ করা যায়নি: '+(x.message||x)}
- adminRender();loadAll()}
+ await adminRender();window.scrollTo(0,0);loadAll()}
 function adminEdit(id){A.edit=A.rows.find(r=>r.id===id);A.msg='';adminRender()}
 async function adminDel(id){if(!confirm('মুছে ফেলবেন?'))return;const r=await sb.from(T[A.tab].tb).delete().eq('id',id);A.msg=r.error?'মুছতে পারেননি: '+r.error.message:'মুছে ফেলা হয়েছে।';adminRender();loadAll()}
 async function adminRender(){const el=$('#adm');if(!el)return;
