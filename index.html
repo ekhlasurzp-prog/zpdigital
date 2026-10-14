@@ -81,6 +81,24 @@ footer img{width:56px;border-radius:14px}
 details.og{border:1px solid var(--line);border-radius:12px;margin:0 0 12px;background:var(--card)}details.og summary{padding:14px 16px;font:700 18px var(--ser);color:#fff;cursor:pointer;min-height:48px}details.og .in{padding:0 12px 12px}.lv{color:var(--gold);margin:14px 0 8px;font-size:16px}
 #fct a{display:inline;padding:0}.card p a{color:var(--gold)}
 .grid.sm.vd .cov{aspect-ratio:16/9;margin-bottom:8px}.grid.sm.vd h3{font-size:14px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.grid.sm.vd .cl{display:none}.grid.sm.vd p.sub{font-size:12px}@media(min-width:700px){.grid.sm.vd{grid-template-columns:repeat(4,1fr)}}
+#intro{position:fixed;inset:0;z-index:1000;background:radial-gradient(120% 90% at 50% 40%,#14693c,#0a4a2a 50%,#04210f);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s;color:#fff;overflow:hidden}
+#intro.out{opacity:0;pointer-events:none}
+#intro .cell{display:grid;place-items:center;width:100%}
+#intro .cell>*{grid-area:1/1}
+#intro .flg{position:relative;width:min(88vw,560px);animation:fIn 1.2s .3s cubic-bezier(.2,.8,.2,1) both,fOut .9s 3.7s ease-in forwards}
+#intro .flg>img:first-child{width:100%;display:block;border-radius:14px;border:3px solid #e9d27a;box-shadow:0 14px 40px rgba(0,0,0,.45)}
+#intro .rs{position:absolute;left:63%;top:50%;width:34%;margin:-9.6% 0 0 -17%;border-radius:12px;border:3px solid #e9d27a;background:#fff;animation:rIn .8s 1.6s cubic-bezier(.3,1.6,.5,1) both}
+#intro .lg{width:min(54vw,250px);border-radius:24%;animation:lIn 1.1s 4s cubic-bezier(.2,1.4,.4,1) both,gl 1.6s 5.2s ease-in-out 2 alternate}
+#intro .sl{margin:22px 16px 0;font-size:14px;letter-spacing:.3px;color:#e9d27a;text-align:center;animation:up .9s 5s both}
+#intro .is{position:absolute;color:#fff;font-size:22px;opacity:0;animation:tw 2.4s ease-in-out infinite}
+#intro .skip{position:absolute;right:14px;top:calc(env(safe-area-inset-top,0px) + 14px);background:rgba(255,255,255,.12);border:1px solid rgba(233,210,122,.7);color:#fff;border-radius:99px;min-height:44px;padding:0 16px;font:inherit;cursor:pointer;animation:up .6s .6s both}
+@keyframes fIn{from{opacity:0;transform:translateX(80px) scale(.88)}to{opacity:1;transform:none}}
+@keyframes fOut{to{opacity:0;transform:scale(.5);filter:blur(8px)}}
+@keyframes rIn{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:none}}
+@keyframes lIn{from{opacity:0;transform:scale(.3) rotate(-14deg)}to{opacity:1;transform:none}}
+@keyframes gl{to{box-shadow:0 0 46px 6px rgba(233,210,122,.75)}}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes tw{0%,100%{opacity:.15;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
 </style>
 </head>
 <body>
@@ -189,6 +207,15 @@ function track(){if(!sb)return;try{if(location.hash.startsWith('#/admin')||(type
  let id=localStorage.getItem('zpv');if(!id){id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2);localStorage.setItem('zpv',id)}
  const p=(location.hash.slice(1).split('?')[0]||'/').split('/').slice(0,3).join('/').slice(0,60)||'/';
  sb.from('site_visits').insert({visitor:id,path:p}).then(()=>{},()=>{})}catch(e){}}
+function intro(){try{
+ if(location.hash.startsWith('#/admin')||sessionStorage.getItem('zpintro')||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+ sessionStorage.setItem('zpintro','1');
+ const o=document.createElement('div');o.id='intro';o.setAttribute('role','dialog');o.setAttribute('aria-label','স্বাগতম');
+ o.innerHTML=`<span class="is" style="left:12%;top:14%">★</span><span class="is" style="right:14%;top:22%;animation-delay:.9s">★</span><span class="is" style="left:20%;bottom:18%;animation-delay:1.6s">★</span><span class="is" style="right:18%;bottom:12%;animation-delay:.4s">★</span><button class="skip" type="button">এড়িয়ে যান ›</button><div class="cell"><div class="flg"><img src="${IMG.flag}" alt=""><img class="rs" src="${IMG.rose}" alt=""></div><img class="lg" src="${IMG.logo}" alt="${esc(SITE.name)} লোগো"></div><p class="sl">${esc(SITE.slogan)}</p>`;
+ document.body.appendChild(o);document.body.style.overflow='hidden';
+ let done=false;const close=()=>{if(done)return;done=true;o.classList.add('out');document.body.style.overflow='';setTimeout(()=>o.remove(),700)};
+ o.addEventListener('click',close);setTimeout(close,7200);
+}catch(e){}}
 const yid=u=>{const m=/(?:youtu\.be\/|youtube\.com\/(?:live\/|embed\/|shorts\/)|[?&]v=)([A-Za-z0-9_-]{11})/.exec(u||'');return m?m[1]:''};
 const fdd=v=>v?new Date(v).toLocaleDateString('bn-BD',{dateStyle:'medium'}):'';
 function mapRow(k,r){const m={k,real:1,id:r.id,s:'',full:''};
@@ -305,7 +332,7 @@ async function adminRender(){const el=$('#adm');if(!el)return;
 $('#navl').innerHTML=PAGES.map(p=>`<li><a href="#${p[0]}">${p[1]}</a></li>`).join('');
 $('#fl').innerHTML=PAGES.slice(1).map(p=>`<a href="#${p[0]}">${p[1]}</a>`).join('');
 $('#mb').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#mb').setAttribute('aria-expanded',o)};
-applySite();addEventListener('hashchange',route);addEventListener('hashchange',track);route();loadAll();track();
+applySite();addEventListener('hashchange',route);addEventListener('hashchange',track);route();loadAll();track();intro();
 </script>
 </body>
 </html>
