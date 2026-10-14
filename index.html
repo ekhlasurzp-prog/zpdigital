@@ -78,6 +78,7 @@ footer img{width:56px;border-radius:14px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .fm label{display:block;margin:10px 0 4px}.fm input,.fm select,.fm textarea{width:100%;min-height:46px;border-radius:10px;border:1px solid var(--line);background:#0b1f15;color:#fff;padding:8px 12px;font:inherit}.fm textarea{min-height:110px}.bar2{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.tw{overflow-x:auto}.tw table{border-collapse:collapse;width:100%;font-size:14px}.tw td,.tw th{border:1px solid var(--line);padding:6px 8px;text-align:left}
 .cl{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.card p.sub,.dt p.sub{color:var(--gold);margin:0 0 4px}.cov.i{background-size:cover;background-position:center top;background-repeat:no-repeat}.grid.sm{grid-template-columns:repeat(2,1fr)}@media(min-width:700px){.grid.sm{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}}.grid.sm .cov{height:auto;aspect-ratio:3/4}.grid.sm .card{padding:10px}.grid.sm h3{font-size:16px}.dt h3{color:var(--hd)}.dt iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:12px;margin:8px 0 16px;display:block}.dimg{width:100%;max-width:min(100%,560px);border-radius:12px;border:3px solid #e9d27a;display:block;margin:0 0 14px}.dt a{color:var(--gold)}.dt .btn{color:#fff}
+details.og{border:1px solid var(--line);border-radius:12px;margin:0 0 12px;background:var(--card)}details.og summary{padding:14px 16px;font:700 18px var(--ser);color:#fff;cursor:pointer;min-height:48px}details.og .in{padding:0 12px 12px}.lv{color:var(--gold);margin:14px 0 8px;font-size:16px}
 </style>
 </head>
 <body>
@@ -128,7 +129,13 @@ ${head('সাম্প্রতিক ভিডিও',list(D.video.slice(0,3))
 ${head('গুরুত্বপূর্ণ ঘোষণা',list(D.ann.slice(0,3)))+end}`},
 "/about"(){return head('সংগঠন পরিচিতি',note+`<div class="split"><div>${ORG.body?'<p style="white-space:pre-wrap">'+esc(ORG.body)+'</p>':'<p><i>[সংগঠনের যাচাইকৃত পরিচিতি, লক্ষ্য ও ইতিহাস এখানে যোগ হবে।]</i></p>'}<p>ZP Digital-এর মূল স্লোগান: <b>সত্য তরিকার প্রচারে ZP Digital।</b></p></div><div><img src="${IMG.flag}" alt="দলীয় পতাকা: গাঢ় সবুজ জমিনে সাদা চাঁদ, তিন তারা ও লাল গোলাপ"><img class="rose" style="margin-top:14px" src="${IMG.rose}" alt="জাকের পার্টির গোলাপ প্রতীক"></div></div>`)+end},
 "/leaders"(){return head('নেতৃবৃন্দ',note+list(D.leader))+end},
-"/committees"(){return head('কমিটি',note+list(D.committee))+end},
+"/committees"(){let h=note;
+ if(!LIVE)h+=list(D.committee);
+ else{const known=ORGS.filter(o=>D.committee.some(c=>c.org===o));const other=D.committee.filter(c=>!ORGS.includes(c.org));
+  if(!D.committee.length)h+='<div class="empty">এখানে এখনো কিছু নেই।</div>';
+  const blk=(o,items,i)=>`<details class="og"${i===0?' open':''}><summary>${esc(o)} (${items.length.toLocaleString('bn-BD')})</summary><div class="in">${[...LEVELS,'অন্যান্য'].map(lv=>{const x=items.filter(c=>lv==='অন্যান্য'?!LEVELS.includes(c.lv):c.lv===lv);return x.length?`<h4 class="lv">${lv}</h4>`+list(x):''}).join('')}</div></details>`;
+  h+=known.map((o,i)=>blk(o,D.committee.filter(c=>c.org===o),i)).join('')+(other.length?blk('অন্যান্য কমিটি',other,known.length):'')}
+ return head('কমিটি',h)+end},
 "/library"(){return head('ডিজিটাল গ্রন্থাগার',note+filt(D.book,['সব',...new Set(D.book.map(b=>b.c).filter(Boolean))]))+end},
 "/events"(){return head('ইভেন্ট ও সময়সূচি',note+list(D.event))+end},
 "/videos"(){return head('ভিডিও ও প্রোগ্রাম',note+'<p>ভিডিও শুধু অনলাইনে দেখা যাবে; অফলাইনে চলবে না।</p>'+list(D.video))+end},
@@ -159,7 +166,7 @@ function mapRow(k,r){const m={k,real:1,id:r.id,s:'',full:''};
  if(k==='book'){m.t=r.title;m.s=r.author||'';m.full=r.description||'';m.c=r.category;m.u=su(r.pdf_url);m.img=su(r.cover_url)}
  else if(k==='video'){m.t=r.title;m.s=fdd(r.video_date);m.full=r.description||'';m.u=su(r.youtube_url);const y=yid(r.youtube_url);m.img=su(r.thumbnail_url)||(y?'https://i.ytimg.com/vi/'+y+'/hqdefault.jpg':'')}
  else if(k==='leader'){m.t=r.name;m.s=r.position||'';m.full=r.bio||'';m.img=su(r.photo_url)}
- else if(k==='committee'){const ms=(r.committee_members||[]).slice().sort((a,b)=>a.sort_order-b.sort_order);m.t=r.name;m.s=ms.length?ms.length+' জন সদস্য':'';m.full=[r.description,ms.map(x=>'- **'+x.name+'**'+(x.role_title?' — '+x.role_title:'')).join('\n')].filter(Boolean).join('\n\n')}
+ else if(k==='committee'){m.t=r.name;m.org=r.org_group||'';m.lv=r.level||'';m.s=[r.org_group,r.level].filter(Boolean).join(' • ');m.full=r.description||'';m.u=su(r.pdf_url)}
  else if(k==='event'){m.t=r.title;m.s=[fd(r.starts_at),r.location].filter(Boolean).join(' • ');m.full=r.description||'';m.img=su(r.image_url)}
  else{m.t=r.title;m.full=r.body||'';m.img=su(r.image_url)}
  m.d=[m.s,m.full].filter(Boolean).join(' — ');return m}
@@ -174,7 +181,7 @@ function md(s){let e=esc(s||'').replace(/\s+###\s+/g,'\n### ').replace(/\s-\s(?=
 function detail(k,id){const x=(D[k]||[]).find(y=>y.id===id);
  if(!x)return `<section class="s"><div class="wrap"><p>${LIVE?'এই পাতাটি পাওয়া যায়নি।':'লোড হচ্ছে…'}</p><p><a class="btn o" href="#${LINK[k]||'/'}">ফিরে যান</a></p></div></section>`;
  const y=k==='video'?yid(x.u):'';
- return `<section class="s dt"><div class="wrap"><p><a href="#${LINK[k]}">← ফিরে যান</a></p><h2>${esc(x.t)}</h2>${x.s?`<p class="sub">${esc(x.s)}</p>`:''}${y?`<iframe src="https://www.youtube-nocookie.com/embed/${y}" title="${esc(x.t)}" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`:x.img?`<img class="dimg" src="${esc(x.img)}" alt="${esc(x.t)}">`:''}${md(x.full)}${x.u?`<p><a class="btn" href="${esc(x.u)}" target="_blank" rel="noopener">${k==='book'?'PDF পড়ুন':'ইউটিউবে খুলুন'}</a></p>`:''}</div></section>`}
+ return `<section class="s dt"><div class="wrap"><p><a href="#${LINK[k]}">← ফিরে যান</a></p><h2>${esc(x.t)}</h2>${x.s?`<p class="sub">${esc(x.s)}</p>`:''}${y?`<iframe src="https://www.youtube-nocookie.com/embed/${y}" title="${esc(x.t)}" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`:x.img?`<img class="dimg" src="${esc(x.img)}" alt="${esc(x.t)}">`:''}${md(x.full)}${x.u?`<p><a class="btn" href="${esc(x.u)}" target="_blank" rel="noopener">${k==='video'?'ইউটিউবে খুলুন':'PDF পড়ুন'}</a></p>`:''}</div></section>`}
 async function loadAll(){if(!sb)return;try{
  const g=async(tb,o,sel='*')=>{const r=await sb.from(tb).select(sel).eq('status','published').order(o,{ascending:['sort_order','starts_at'].includes(o)});if(r.error)throw r.error;return r.data};
  const [b,v,l,c,e,a,o]=await Promise.all([g('books','published_at'),g('videos','published_at'),g('leaders','sort_order'),g('committees','published_at','*,committee_members(*)'),g('events','starts_at'),g('announcements','published_at'),g('org_pages','published_at')]);
@@ -182,10 +189,12 @@ async function loadAll(){if(!sb)return;try{
  ORG=o.find(x=>x.slug==='about')||{};LIVE=true;note='';
  if(!location.hash.startsWith('#/admin'))route();
 }catch(e){console.error('DB',e)}}
+const ORGS=['জাকের পার্টি (মূল দল)','জাকের পার্টি ছাত্র ফ্রন্ট','জাকের পার্টি ছাত্রী ফ্রন্ট','জাকের পার্টি যুব ফ্রন্ট','জাকের পার্টি কিশোর ফ্রন্ট','জাকের পার্টি মহিলা ফ্রন্ট','জাকের পার্টি স্বেচ্ছাসেবক ফ্রন্ট','জাকের পার্টি যুব স্বেচ্ছাসেবক ফ্রন্ট','জাকের পার্টি শ্রমিক ফ্রন্ট','জাকের পার্টি ওলামা ফ্রন্ট','জাকের পার্টি যুব ওলামা ফ্রন্ট','জাকের পার্টি তালাবা ফ্রন্ট','জাকের পার্টি মৎস্যজীবী ফ্রন্ট','জাকের পার্টি ভক্ত ফ্রন্ট'];
+const LEVELS=['কেন্দ্রীয় কমিটি','জেলা কমিটি','মহানগর কমিটি','উপজেলা কমিটি'];
 const T={book:{tb:'books',l:'বই',n:'title',f:[['title','শিরোনাম'],['author','লেখক'],['category','বিভাগ'],['description','বিবরণ','ta'],['cover_url','কভার ছবি','file:image/*'],['pdf_url','PDF ফাইল','file:application/pdf']]},
 video:{tb:'videos',l:'ভিডিও',n:'title',f:[['title','শিরোনাম'],['description','বিবরণ','ta'],['youtube_url','ইউটিউব লিংক'],['thumbnail_url','থাম্বনেইল','file:image/*'],['video_date','তারিখ','date']]},
 leader:{tb:'leaders',l:'নেতা',n:'name',f:[['name','নাম'],['position','পদবি'],['bio','পরিচিতি','ta'],['photo_url','ছবি','file:image/*'],['sort_order','ক্রম','number']]},
-committee:{tb:'committees',l:'কমিটি',n:'name',f:[['name','কমিটির নাম'],['description','বিবরণ','ta'],['members','সদস্য (প্রতি লাইনে: নাম | পদ)','members']]},
+committee:{tb:'committees',l:'কমিটি',n:'name',f:[['org_group','সংগঠন','select:'+ORGS.join('|')],['level','কমিটির স্তর','select:'+LEVELS.join('|')],['name','কমিটির নাম বা এলাকা (যেমন: ঢাকা জেলা কমিটি)'],['description','বিবরণ','ta'],['pdf_url','কমিটির PDF','file:application/pdf']]},
 event:{tb:'events',l:'ইভেন্ট',n:'title',f:[['title','শিরোনাম'],['description','বিবরণ','ta'],['location','স্থান'],['image_url','ছবি','file:image/*'],['starts_at','শুরুর সময়','datetime-local']]},
 ann:{tb:'announcements',l:'ঘোষণা',n:'title',f:[['title','শিরোনাম'],['image_url','ছবি','file:image/*'],['body','বিস্তারিত','ta']]},
 org:{tb:'org_pages',l:'সংগঠন-তথ্য',n:'title',f:[['slug','স্লাগ (সংগঠন পাতার জন্য about লিখুন)'],['title','শিরোনাম'],['body','লেখা','ta']]}};
@@ -202,6 +211,7 @@ function formHtml(r){const t=T[A.tab],isC=A.role==='contributor',sts=isC?['draft
  for(const [n,l,ty] of t.f){const v=r?(r[n]??''):'';
   if(ty==='ta')h+=`<label>${l}<textarea name="${n}">${esc(v)}</textarea></label>`;
   else if(ty==='members'){const m=((r&&r.committee_members)||[]).slice().sort((a,b)=>a.sort_order-b.sort_order).map(x=>x.name+' | '+(x.role_title||'')).join('\n');h+=`<label>${l}<textarea name="members">${esc(m)}</textarea></label>`}
+  else if(ty&&ty.startsWith('select:'))h+=`<label>${l}<select name="${n}">${ty.slice(7).split('|').map(o=>`<option${v===o?' selected':''}>${esc(o)}</option>`).join('')}</select></label>`;
   else if(ty&&ty.startsWith('file:'))h+=`<label>${l}<input type="file" name="${n}_file" accept="${ty.slice(5)}"></label><input type="hidden" name="${n}" value="${esc(v)}">${v?'<p>বর্তমান ফাইল আছে। নতুন বাছলে বদলাবে।</p>':''}`;
   else{let val=v;if(ty==='datetime-local'&&v){const d=new Date(v);val=new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,16)}
    h+=`<label>${l}<input name="${n}" type="${ty||'text'}" value="${esc(val)}"></label>`}}
@@ -214,9 +224,6 @@ async function adminSave(e){e.preventDefault();const f=e.target,t=T[A.tab],o={};
   o[n]=v}
   o.status=f.status.value;let id=A.edit&&A.edit.id;
   const r=id?await sb.from(t.tb).update(o).eq('id',id).select().single():await sb.from(t.tb).insert(o).select().single();if(r.error)throw r.error;
-  if(A.tab==='committee'){id=r.data.id;const d=await sb.from('committee_members').delete().eq('committee_id',id);if(d.error)throw d.error;
-   const rows=f.members.value.split('\n').map(x=>x.trim()).filter(Boolean).map((x,i)=>{const p=x.split('|');return{committee_id:id,name:p[0].trim(),role_title:(p[1]||'').trim()||null,sort_order:i}});
-   if(rows.length){const n=await sb.from('committee_members').insert(rows);if(n.error)throw n.error}}
   A.edit=undefined;A.msg='সংরক্ষণ হয়েছে।'}catch(x){A.msg='সংরক্ষণ করা যায়নি: '+(x.message||x)}
  await adminRender();window.scrollTo(0,0);loadAll()}
 function adminEdit(id){A.edit=A.rows.find(r=>r.id===id);A.msg='';adminRender()}
@@ -231,7 +238,7 @@ async function adminRender(){const el=$('#adm');if(!el)return;
  const t=T[A.tab],r=await sb.from(t.tb).select(A.tab==='committee'?'*,committee_members(*)':'*').order('created_at',{ascending:false});
  if(r.error){el.innerHTML=h+'<p>তথ্য আনা যায়নি: '+esc(r.error.message)+'</p>';return}
  A.rows=r.data;h+=`<div class="bar2"><button class="btn" onclick="A.edit=null;A.msg='';adminRender()">+ নতুন যোগ করুন</button></div>`;
- h+=r.data.length?r.data.map(x=>`<div class="card" style="margin-bottom:12px"><span class="tag">${STL[x.status]}</span><h3>${esc(x[t.n])}</h3><div class="bar2"><button class="btn o" onclick="adminEdit('${x.id}')">সম্পাদনা</button>${A.role==='super_admin'?`<button class="btn o" onclick="adminDel('${x.id}')">মুছুন</button>`:''}</div></div>`).join(''):'<div class="empty">এখনো কিছু যোগ হয়নি।</div>';
+ h+=r.data.length?r.data.map(x=>`<div class="card" style="margin-bottom:12px"><span class="tag">${STL[x.status]}</span><h3>${esc(x[t.n])}</h3>${x.level?`<p>${esc((x.org_group||'')+' • '+x.level)}</p>`:''}<div class="bar2"><button class="btn o" onclick="adminEdit('${x.id}')">সম্পাদনা</button>${A.role==='super_admin'?`<button class="btn o" onclick="adminDel('${x.id}')">মুছুন</button>`:''}</div></div>`).join(''):'<div class="empty">এখনো কিছু যোগ হয়নি।</div>';
  el.innerHTML=h}
 $('#navl').innerHTML=PAGES.map(p=>`<li><a href="#${p[0]}">${p[1]}</a></li>`).join('');
 $('#fl').innerHTML=PAGES.slice(1).map(p=>`<a href="#${p[0]}">${p[1]}</a>`).join('');
