@@ -128,7 +128,9 @@ ${head('নির্বাচিত বই',note+list(D.book.slice(0,3)))+end}
 ${head('আসন্ন ইভেন্ট',list(D.event.slice(0,3)))+end}
 ${head('সাম্প্রতিক ভিডিও',list(D.video.slice(0,3)))+end}
 ${head('গুরুত্বপূর্ণ ঘোষণা',list(D.ann.slice(0,3)))+end}`},
-"/about"(){return head('সংগঠন পরিচিতি',note+`<div class="split"><div>${ORG.body?'<p style="white-space:pre-wrap">'+esc(ORG.body)+'</p>':'<p><i>[সংগঠনের যাচাইকৃত পরিচিতি, লক্ষ্য ও ইতিহাস এখানে যোগ হবে।]</i></p>'}<p>ZP Digital-এর মূল স্লোগান: <b>সত্য তরিকার প্রচারে ZP Digital।</b></p></div><div><img src="${IMG.flag}" alt="দলীয় পতাকা: গাঢ় সবুজ জমিনে সাদা চাঁদ, তিন তারা ও লাল গোলাপ"><img class="rose" style="margin-top:14px" src="${IMG.rose}" alt="জাকের পার্টির গোলাপ প্রতীক"></div></div>`)+end},
+"/about"(){const live=LIVE&&ORGP.length;
+ const txt=live?ORGP.map((x,i)=>`<details class="og"${i===0?' open':''}><summary>${esc(x.t)}</summary><div class="in dt">${md(x.full)}</div></details>`).join(''):'<p><i>[সংগঠনের যাচাইকৃত পরিচিতি, লক্ষ্য ও ইতিহাস এখানে যোগ হবে।]</i></p>';
+ return head('সংগঠন পরিচিতি',(live?'':note)+`<div class="split"><div>${txt}<p>${esc(SITE.name)}-এর মূল স্লোগান: <b>${esc(SITE.slogan)}</b></p></div><div><img src="${IMG.flag}" alt="দলীয় পতাকা: সবুজ জমিনে সাদা চাঁদ, তিন তারা ও লাল গোলাপ"><img class="rose" style="margin-top:14px" src="${IMG.rose}" alt="জাকের পার্টির গোলাপ প্রতীক"></div></div>`)+end},
 "/leaders"(){return head('নেতৃবৃন্দ',note+list(D.leader))+end},
 "/committees"(){let h=note;
  if(!LIVE)h+=list(D.committee);
@@ -155,7 +157,7 @@ function route(){
 }
 
 const SB_URL='https://fkxksdktuewkuszbgfjo.supabase.co',SB_KEY='sb_publishable_ENp04s60YPkHsjjUWj3J9g_Kg2skuo6';
-let sb=null,LIVE=false,ORG={};
+let sb=null,LIVE=false,ORG={},ORGP=[];
 try{sb=window.supabase.createClient(SB_URL,SB_KEY)}catch(e){console.error(e)}
 const su=u=>/^https?:\/\//i.test(u||'')?u:'';
 const fd=v=>v?new Date(v).toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'}):'';
@@ -204,7 +206,7 @@ async function loadAll(){if(!sb)return;try{
  await loadSite();
  const [b,v,l,c,e,a,o]=await Promise.all([g('books','published_at'),g('videos','published_at'),g('leaders','sort_order'),g('committees','published_at','*,committee_members(*)'),g('events','starts_at'),g('announcements','published_at'),g('org_pages','published_at')]);
  D={book:b.map(r=>mapRow('book',r)),video:v.map(r=>mapRow('video',r)),leader:l.map(r=>mapRow('leader',r)),committee:c.map(r=>mapRow('committee',r)),event:e.map(r=>mapRow('event',r)),ann:a.map(r=>mapRow('ann',r))};
- ORG=o.find(x=>x.slug==='about')||{};LIVE=true;note='';applySite();
+ ORGP=o.map(r=>({id:r.id,t:r.title,full:r.body||''})).reverse();LIVE=true;note='';applySite();
  if(!location.hash.startsWith('#/admin'))route();
 }catch(e){console.error('DB',e)}}
 const ORGS=['জাকের পার্টি (মূল দল)','জাকের পার্টি ছাত্র ফ্রন্ট','জাকের পার্টি ছাত্রী ফ্রন্ট','জাকের পার্টি যুব ফ্রন্ট','জাকের পার্টি কিশোর ফ্রন্ট','জাকের পার্টি মহিলা ফ্রন্ট','জাকের পার্টি স্বেচ্ছাসেবক ফ্রন্ট','জাকের পার্টি যুব স্বেচ্ছাসেবক ফ্রন্ট','জাকের পার্টি শ্রমিক ফ্রন্ট','জাকের পার্টি ওলামা ফ্রন্ট','জাকের পার্টি যুব ওলামা ফ্রন্ট','জাকের পার্টি তালাবা ফ্রন্ট','জাকের পার্টি মৎস্যজীবী ফ্রন্ট','জাকের পার্টি ভক্ত ফ্রন্ট'];
