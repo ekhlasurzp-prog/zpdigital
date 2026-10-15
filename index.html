@@ -81,24 +81,40 @@ footer img{width:56px;border-radius:14px}
 details.og{border:1px solid var(--line);border-radius:12px;margin:0 0 12px;background:var(--card)}details.og summary{padding:14px 16px;font:700 18px var(--ser);color:#fff;cursor:pointer;min-height:48px}details.og .in{padding:0 12px 12px}.lv{color:var(--gold);margin:14px 0 8px;font-size:16px}
 #fct a{display:inline;padding:0}.card p a{color:var(--gold)}
 .grid.sm.vd .cov{aspect-ratio:16/9;margin-bottom:8px}.grid.sm.vd h3{font-size:14px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.grid.sm.vd .cl{display:none}.grid.sm.vd p.sub{font-size:12px}@media(min-width:700px){.grid.sm.vd{grid-template-columns:repeat(4,1fr)}}
-#intro{position:fixed;inset:0;z-index:1000;background:radial-gradient(120% 90% at 50% 40%,#14693c,#0a4a2a 50%,#04210f);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s;color:#fff;overflow:hidden}
-#intro.out{opacity:0;pointer-events:none}
+#intro{position:fixed;inset:0;z-index:1000;background:radial-gradient(120% 90% at 50% 40%,#0f5a32,#08391f 55%,#031a0c);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;overflow:hidden;animation:ah .6s 6.6s forwards}
+#intro.out{opacity:0;pointer-events:none;transition:opacity .6s}
 #intro .cell{display:grid;place-items:center;width:100%}
 #intro .cell>*{grid-area:1/1}
-#intro .flg{position:relative;width:min(88vw,560px);animation:fIn 1.2s .3s cubic-bezier(.2,.8,.2,1) both,fOut .9s 3.7s ease-in forwards}
-#intro .flg>img:first-child{width:100%;display:block;border-radius:14px;border:3px solid #e9d27a;box-shadow:0 14px 40px rgba(0,0,0,.45)}
-#intro .rs{position:absolute;left:63%;top:50%;width:34%;margin:-9.6% 0 0 -17%;border-radius:12px;border:3px solid #e9d27a;background:#fff;animation:rIn .8s 1.6s cubic-bezier(.3,1.6,.5,1) both}
-#intro .lg{width:min(54vw,250px);border-radius:24%;animation:lIn 1.1s 4s cubic-bezier(.2,1.4,.4,1) both,gl 1.6s 5.2s ease-in-out 2 alternate}
-#intro .sl{margin:22px 16px 0;font-size:14px;letter-spacing:.3px;color:#e9d27a;text-align:center;animation:up .9s 5s both}
+#intro .gl{width:min(88vw,560px);height:2px;background:linear-gradient(90deg,transparent,#e9d27a,transparent);animation:ln 1.1s .1s ease-out both}
+#intro .halo{width:min(86vw,360px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(233,210,122,.5),transparent 65%);opacity:0;animation:hf 1.2s 3.2s both,hp 1.6s 4.4s ease-in-out infinite alternate}
+#intro .flg{position:relative;width:min(88vw,560px);animation:im .7s 2.5s cubic-bezier(.6,0,.9,.4) forwards}
+#intro .flg>img:first-child{width:100%;display:block;border-radius:12px;border:3px solid #e9d27a;box-shadow:0 14px 40px rgba(0,0,0,.5);animation:op 1s .3s cubic-bezier(.7,0,.2,1) both}
+#intro .rs{position:absolute;left:63%;top:50%;width:34%;margin:-9.6% 0 0 -17%;border-radius:12px;border:3px solid #e9d27a;background:#fff;animation:rIn .8s 1.3s cubic-bezier(.3,1.6,.5,1) both}
+#intro .rg{position:absolute;left:63%;top:50%;width:34%;aspect-ratio:1;margin:-17% 0 0 -17%;border:2px solid #e9d27a;border-radius:50%;opacity:0;animation:rp 1.1s 1.5s ease-out forwards}
+#intro .rg+.rg{animation-delay:1.8s}
+#intro .lgw{width:min(54vw,250px);aspect-ratio:1;border-radius:24%;overflow:hidden;position:relative;animation:ir 1s 3s cubic-bezier(.2,.8,.2,1) both}
+#intro .lgw img{width:100%;height:100%;display:block;animation:zo 1.4s 3s cubic-bezier(.2,.8,.2,1) both}
+#intro .lgw:after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.6) 50%,transparent 62%);transform:translateX(-130%);animation:sh 1s 4s ease-in-out forwards}
+#intro .fx{position:absolute;inset:0;background:radial-gradient(circle,#fff,rgba(255,255,255,0) 60%);opacity:0;pointer-events:none;animation:fx .6s 2.8s ease-out forwards}
+#intro .sl{margin:22px 16px 0;font-size:14px;letter-spacing:.3px;color:#e9d27a;text-align:center}
+#intro .w{display:inline-block;margin:0 3px;opacity:0;animation:up .6s both}
 #intro .is{position:absolute;color:#fff;font-size:22px;opacity:0;animation:tw 2.4s ease-in-out infinite}
-#intro .skip{position:absolute;right:14px;top:calc(env(safe-area-inset-top,0px) + 14px);background:rgba(255,255,255,.12);border:1px solid rgba(233,210,122,.7);color:#fff;border-radius:99px;min-height:44px;padding:0 16px;font:inherit;cursor:pointer;animation:up .6s .6s both}
-@keyframes fIn{from{opacity:0;transform:translateX(80px) scale(.88)}to{opacity:1;transform:none}}
-@keyframes fOut{to{opacity:0;transform:scale(.5);filter:blur(8px)}}
+@keyframes ln{0%{transform:scaleX(0);opacity:1}60%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:0}}
+@keyframes op{from{clip-path:inset(50% 0 50% 0)}to{clip-path:inset(0)}}
 @keyframes rIn{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:none}}
-@keyframes lIn{from{opacity:0;transform:scale(.3) rotate(-14deg)}to{opacity:1;transform:none}}
-@keyframes gl{to{box-shadow:0 0 46px 6px rgba(233,210,122,.75)}}
-@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes rp{from{opacity:.9;transform:scale(.3)}to{opacity:0;transform:scale(2.6)}}
+@keyframes im{to{opacity:0;transform:scale(.15);filter:blur(6px)}}
+@keyframes fx{0%{opacity:0}35%{opacity:.85}100%{opacity:0}}
+@keyframes ir{from{clip-path:circle(0% at 50% 50%)}to{clip-path:circle(75% at 50% 50%)}}
+@keyframes zo{from{transform:scale(1.5)}to{transform:none}}
+@keyframes sh{to{transform:translateX(130%)}}
+@keyframes hf{from{opacity:0}to{opacity:1}}
+@keyframes hp{to{transform:scale(1.12)}}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @keyframes tw{0%,100%{opacity:.15;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+@keyframes ah{to{opacity:0;visibility:hidden;pointer-events:none}}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}.chips a{min-height:44px;display:inline-flex;align-items:center;padding:0 16px;border-radius:99px;border:1px solid var(--line);background:var(--card);text-decoration:none}.chips a[aria-current=page]{background:var(--g);border-color:var(--gold)}.bc{color:var(--mut);margin:0 0 14px}.bc a{color:var(--gold)}.dl{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.dl a{display:flex;align-items:center;min-height:48px;padding:0 14px;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:8px;background:var(--card);text-decoration:none}.fi{width:100%;min-height:46px;border-radius:10px;border:1px solid var(--line);background:#0b1f15;color:#fff;padding:0 12px;font:inherit;margin:0 0 12px}
+.chips{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.chips{grid-template-columns:repeat(4,1fr)}}.chip{min-height:46px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;cursor:pointer;padding:6px 10px;text-align:left}.chip small{color:var(--gold)}.chip:hover{border-color:var(--gold)}.cmr{display:grid;gap:10px}.card.dim{opacity:.55}
 </style>
 </head>
 <body>
@@ -151,13 +167,7 @@ ${head('গুরুত্বপূর্ণ ঘোষণা',list(D.ann.slice(0
  const txt=live?ORGP.map((x,i)=>`<details class="og"${i===0?' open':''}><summary>${esc(x.t)}</summary><div class="in dt">${md(x.full)}</div></details>`).join(''):'<p><i>[সংগঠনের যাচাইকৃত পরিচিতি, লক্ষ্য ও ইতিহাস এখানে যোগ হবে।]</i></p>';
  return head('সংগঠন পরিচিতি',(live?'':note)+`<div class="split"><div>${txt}<p>${esc(SITE.name)}-এর মূল স্লোগান: <b>${esc(SITE.slogan)}</b></p></div><div><img src="${IMG.flag}" alt="দলীয় পতাকা: সবুজ জমিনে সাদা চাঁদ, তিন তারা ও লাল গোলাপ"><img class="rose" style="margin-top:14px" src="${IMG.rose}" alt="জাকের পার্টির গোলাপ প্রতীক"></div></div>`)+end},
 "/leaders"(){return head('নেতৃবৃন্দ',note+list(D.leader))+end},
-"/committees"(){let h=note;
- if(!LIVE)h+=list(D.committee);
- else{const known=ORGS.filter(o=>D.committee.some(c=>c.org===o));const other=D.committee.filter(c=>!ORGS.includes(c.org));
-  if(!D.committee.length)h+='<div class="empty">এখানে এখনো কিছু নেই।</div>';
-  const blk=(o,items,i)=>`<details class="og"${i===0?' open':''}><summary>${esc(o)} (${items.length.toLocaleString('bn-BD')})</summary><div class="in">${[...LEVELS,'অন্যান্য'].map(lv=>{const x=items.filter(c=>lv==='অন্যান্য'?!LEVELS.includes(c.lv):c.lv===lv);return x.length?`<h4 class="lv">${lv}</h4>`+list(x):''}).join('')}</div></details>`;
-  h+=known.map((o,i)=>blk(o,D.committee.filter(c=>c.org===o),i)).join('')+(other.length?blk('অন্যান্য কমিটি',other,known.length):'')}
- return head('কমিটি',h)+end},
+"/committees"(){setTimeout(cmRender,0);return head('কমিটি',(LIVE?'':note)+'<div id="cmx"></div>')+end},
 "/library"(){return head('ডিজিটাল গ্রন্থাগার',note+filt(D.book,['সব',...new Set(D.book.map(b=>b.c).filter(Boolean))]))+end},
 "/events"(){return head('ইভেন্ট ও সময়সূচি',note+list(D.event))+end},
 "/videos"(){return head('ভিডিও ও প্রোগ্রাম',note+'<p>ভিডিও শুধু অনলাইনে দেখা যাবে; অফলাইনে চলবে না।</p>'+list(D.video))+end},
@@ -168,7 +178,7 @@ ${head('গুরুত্বপূর্ণ ঘোষণা',list(D.ann.slice(0
 return head('অনুসন্ধানের ফল',sform(q,ty)+`<p style="margin:14px 0">${t?esc(r.length)+' টি ফল পাওয়া গেছে:':'খোঁজার জন্য কিছু লিখুন।'} ${t?'<b>'+esc(q)+'</b>':''}</p>`+(t?list(r):''))+end}};
 function route(){
  const h=location.hash.slice(1)||'/';const [p,qs]=h.split('?');const U=new URLSearchParams(qs||'');const q=U.get('q')||'',ty=U.get('t')||'all';
- const vm=/^\/view\/(\w+)\/([\w-]+)$/.exec(p);const f=vm?()=>detail(vm[1],vm[2]):(R[p]||R['/']);$('#main').innerHTML=f(q,ty);
+ const vm=/^\/view\/(\w+)\/([\w-]+)$/.exec(p);const cm=/^\/committees(\/.*)?$/.exec(p);const f=vm?()=>detail(vm[1],vm[2]):(cm?()=>committeesPage(p):(R[p]||R['/']));$('#main').innerHTML=f(q,ty);
  document.querySelectorAll('#navl a').forEach(a=>a.getAttribute('href')==='#'+p?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
  const pg=PAGES.find(x=>x[0]===p);document.title=(p==='/search'?'অনুসন্ধান':pg?pg[1]:SITE.name)+' — '+SITE.name;
  $('#nav').classList.remove('open');$('#mb').setAttribute('aria-expanded','false');window.scrollTo(0,0);
@@ -211,18 +221,41 @@ function intro(){try{
  if(location.hash.startsWith('#/admin')||sessionStorage.getItem('zpintro')||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
  sessionStorage.setItem('zpintro','1');
  const o=document.createElement('div');o.id='intro';o.setAttribute('role','dialog');o.setAttribute('aria-label','স্বাগতম');
- o.innerHTML=`<span class="is" style="left:12%;top:14%">★</span><span class="is" style="right:14%;top:22%;animation-delay:.9s">★</span><span class="is" style="left:20%;bottom:18%;animation-delay:1.6s">★</span><span class="is" style="right:18%;bottom:12%;animation-delay:.4s">★</span><button class="skip" type="button">এড়িয়ে যান ›</button><div class="cell"><div class="flg"><img src="${IMG.flag}" alt=""><img class="rs" src="${IMG.rose}" alt=""></div><img class="lg" src="${IMG.logo}" alt="${esc(SITE.name)} লোগো"></div><p class="sl">${esc(SITE.slogan)}</p>`;
+ const wd=SITE.slogan.split(' ').map((w,i)=>`<span class="w" style="animation-delay:${(4.2+i*.2).toFixed(1)}s">${esc(w)}</span>`).join(' ');
+ o.innerHTML=`<span class="fx"></span><span class="is" style="left:12%;top:14%">★</span><span class="is" style="right:14%;top:22%;animation-delay:.9s">★</span><span class="is" style="left:20%;bottom:18%;animation-delay:1.6s">★</span><span class="is" style="right:18%;bottom:12%;animation-delay:.4s">★</span><div class="cell"><div class="gl"></div><div class="halo"></div><div class="flg"><img src="${IMG.flag}" alt=""><img class="rs" src="${IMG.rose}" alt=""><i class="rg"></i><i class="rg"></i></div><div class="lgw"><img src="${IMG.logo}" alt="${esc(SITE.name)} লোগো"></div></div><p class="sl">${wd}</p>`;
  document.body.appendChild(o);document.body.style.overflow='hidden';
- let done=false;const close=()=>{if(done)return;done=true;o.classList.add('out');document.body.style.overflow='';setTimeout(()=>o.remove(),700)};
- o.addEventListener('click',close);setTimeout(close,7200);
-}catch(e){}}
+ setTimeout(()=>{o.classList.add('out');document.body.style.overflow='';setTimeout(()=>o.remove(),700)},6200);
+}catch(e){document.body.style.overflow=''}}
+function committeesPage(p){
+ const seg=p.split('/').filter(Boolean).slice(1).map(x=>{try{return decodeURIComponent(x)}catch(e){return x}}),[t,a,b]=seg;
+ const L=(...x)=>'#/committees'+x.map(q=>'/'+encodeURIComponent(q)).join('');
+ const T4=[['central','কেন্দ্রীয় কমিটি','মূল দল ও সকল সহযোগী সংগঠনের কেন্দ্রীয় কমিটি'],['district','জেলা কমিটি','৬৪ জেলার কমিটি'],['metro','মহানগর কমিটি','মহানগর কমিটিসমূহ'],['upazila','উপজেলা কমিটি','জেলাভিত্তিক উপজেলা কমিটি']];
+ const chips='<div class="chips">'+T4.map(x=>`<a href="${L(x[0])}"${x[0]===t?' aria-current="page"':''}>${x[1]}</a>`).join('')+'</div>';
+ const bc=(...x)=>'<p class="bc">'+x.map(([n,h])=>h?`<a href="${h}">${esc(n)}</a>`:`<b>${esc(n)}</b>`).join(' › ')+'</p>';
+ const pre=LIVE?'':note;
+ const rows=f=>ORGS.map(o=>{const it=D.committee.filter(c=>c.org===o&&f(c));
+  return `<div class="card" style="margin-bottom:12px"><h3>${esc(o)}</h3>${it.length?it.map(c=>`<div><p class="sub">${esc(c.t)}</p>${c.full?md(c.full):''}${c.u?`<p><a class="btn" href="${esc(c.u)}" target="_blank" rel="noopener">কমিটির PDF পড়ুন</a></p>`:''}</div>`).join(''):'<p style="margin:0;color:var(--mut)">এখনো যোগ করা হয়নি।</p>'}</div>`}).join('');
+ const grid=(arr,h)=>`<input class="fi" placeholder="নাম দিয়ে খুঁজুন" aria-label="খুঁজুন" oninput="const v=this.value.trim();document.querySelectorAll('.dl a').forEach(e=>e.style.display=e.textContent.includes(v)?'':'none')"><div class="dl">${arr.map(x=>`<a href="${h(x)}">${esc(x)}</a>`).join('')}</div>`;
+ if(!T4.some(x=>x[0]===t))return head('কমিটি',pre+`<div class="grid">${T4.map(x=>`<a class="card qa" href="${L(x[0])}"><b>${x[1]}</b><span>${x[2]}</span></a>`).join('')}</div>`)+end;
+ const ttl=T4.find(x=>x[0]===t)[1];
+ if(t==='central')return head(ttl,pre+chips+rows(c=>c.lv==='কেন্দ্রীয় কমিটি'))+end;
+ if(t==='district'){
+  if(!a)return head(ttl,pre+chips+grid(DISTS,d=>L('district',d)))+end;
+  return head(esc(a)+' জেলার সকল কমিটি',pre+chips+bc([ttl,L('district')],[a])+rows(c=>c.lv==='জেলা কমিটি'&&c.dist===a)+`<p><a class="btn o" href="${L('upazila',a)}">${esc(a)} জেলার উপজেলা কমিটি দেখুন</a></p>`)+end}
+ if(t==='metro'){
+  if(!a)return head(ttl,pre+chips+grid(METROS,m=>L('metro',m)))+end;
+  return head(esc(a)+'-এর সকল কমিটি',pre+chips+bc([ttl,L('metro')],[a])+rows(c=>c.lv==='মহানগর কমিটি'&&c.metro===a))+end}
+ if(!a)return head(ttl,pre+chips+grid(DISTS,d=>L('upazila',d)))+end;
+ const us=[...new Set([...(UPZ[a]||[]),...D.committee.filter(c=>c.lv==='উপজেলা কমিটি'&&c.dist===a&&c.upz).map(c=>c.upz)])];
+ if(!b)return head(esc(a)+' জেলার উপজেলা',pre+chips+bc([ttl,L('upazila')],[a])+(us.length?`<div class="dl">${us.map(u=>`<a href="${L('upazila',a,u)}">${esc(u)}</a>`).join('')}</div>`:'<div class="empty">এই জেলার উপজেলা কমিটি এখনো যোগ করা হয়নি।</div>'))+end;
+ return head(esc(a)+' জেলা, '+esc(b)+' উপজেলার সকল কমিটি',pre+chips+bc([ttl,L('upazila')],[a,L('upazila',a)],[b])+rows(c=>c.lv==='উপজেলা কমিটি'&&c.dist===a&&c.upz===b))+end}
 const yid=u=>{const m=/(?:youtu\.be\/|youtube\.com\/(?:live\/|embed\/|shorts\/)|[?&]v=)([A-Za-z0-9_-]{11})/.exec(u||'');return m?m[1]:''};
 const fdd=v=>v?new Date(v).toLocaleDateString('bn-BD',{dateStyle:'medium'}):'';
 function mapRow(k,r){const m={k,real:1,id:r.id,s:'',full:''};
  if(k==='book'){m.t=r.title;m.s=r.author||'';m.full=r.description||'';m.c=r.category;m.u=su(r.pdf_url);m.img=su(r.cover_url)}
  else if(k==='video'){m.pub=r.published_at;m.t=r.title;m.s=fdd(r.video_date);m.full=r.description||'';m.u=su(r.youtube_url);const y=yid(r.youtube_url);m.img=su(r.thumbnail_url)||(y?'https://i.ytimg.com/vi/'+y+'/hqdefault.jpg':'')}
  else if(k==='leader'){m.t=r.name;m.s=r.position||'';m.full=r.bio||'';m.img=su(r.photo_url)}
- else if(k==='committee'){m.t=r.name;m.org=r.org_group||'';m.lv=r.level||'';m.s=[r.org_group,r.level].filter(Boolean).join(' • ');m.full=r.description||'';m.u=su(r.pdf_url)}
+ else if(k==='committee'){m.t=r.name;m.org=r.org_group||'';m.lv=r.level||'';m.dist=r.district||'';m.metro=r.metro||'';m.upz=r.upazila||'';m.s=[r.org_group,r.level,r.district,r.metro,r.upazila].filter(Boolean).join(' • ');m.full=r.description||'';m.u=su(r.pdf_url)}
  else if(k==='event'){m.t=r.title;m.s=[fd(r.starts_at),r.location].filter(Boolean).join(' • ');m.full=r.description||'';m.img=su(r.image_url)}
  else{m.t=r.title;m.full=r.body||'';m.img=su(r.image_url)}
  m.d=[m.s,m.full].filter(Boolean).join(' — ');return m}
@@ -246,12 +279,102 @@ async function loadAll(){if(!sb)return;try{
  ORGP=o.map(r=>({id:r.id,t:r.title,full:r.body||''})).reverse();LIVE=true;note='';applySite();
  if(!location.hash.startsWith('#/admin'))route();
 }catch(e){console.error('DB',e)}}
+const PICK='— বাছুন —';
+const DISTS=['ঢাকা','গাজীপুর','কিশোরগঞ্জ','মানিকগঞ্জ','মুন্সিগঞ্জ','নারায়ণগঞ্জ','নরসিংদী','টাঙ্গাইল','ফরিদপুর','গোপালগঞ্জ','মাদারীপুর','রাজবাড়ী','শরীয়তপুর','চট্টগ্রাম','কক্সবাজার','কুমিল্লা','ফেনী','ব্রাহ্মণবাড়িয়া','রাঙ্গামাটি','নোয়াখালী','চাঁদপুর','লক্ষ্মীপুর','খাগড়াছড়ি','বান্দরবান','রাজশাহী','বগুড়া','জয়পুরহাট','নওগাঁ','নাটোর','চাঁপাইনবাবগঞ্জ','পাবনা','সিরাজগঞ্জ','খুলনা','বাগেরহাট','চুয়াডাঙ্গা','যশোর','ঝিনাইদহ','কুষ্টিয়া','মাগুরা','মেহেরপুর','নড়াইল','সাতক্ষীরা','বরিশাল','বরগুনা','ভোলা','ঝালকাঠি','পটুয়াখালী','পিরোজপুর','সিলেট','হবিগঞ্জ','মৌলভীবাজার','সুনামগঞ্জ','রংপুর','দিনাজপুর','গাইবান্ধা','কুড়িগ্রাম','লালমনিরহাট','নীলফামারী','পঞ্চগড়','ঠাকুরগাঁও','ময়মনসিংহ','জামালপুর','নেত্রকোণা','শেরপুর'];
+const METROS=['ঢাকা মহানগর উত্তর','ঢাকা মহানগর দক্ষিণ','চট্টগ্রাম মহানগর','রাজশাহী মহানগর','খুলনা মহানগর','বরিশাল মহানগর','সিলেট মহানগর','রংপুর মহানগর','ময়মনসিংহ মহানগর','গাজীপুর মহানগর','নারায়ণগঞ্জ মহানগর','কুমিল্লা মহানগর'];
+const UPZ={
+'ঢাকা':'ধামরাই,দোহার,কেরানীগঞ্জ,নবাবগঞ্জ,সাভার',
+'ফরিদপুর':'আলফাডাঙ্গা,ভাঙ্গা,বোয়ালমারী,চরভদ্রাসন,মধুখালী,নগরকান্দা,*,সালথা,সদরপুর',
+'গাজীপুর':'কালিয়াকৈর,কালীগঞ্জ,কাপাসিয়া,শ্রীপুর,*',
+'গোপালগঞ্জ':'*,কাশিয়ানী,কোটালীপাড়া,মুকসুদপুর,টুঙ্গিপাড়া',
+'কিশোরগঞ্জ':'অষ্টগ্রাম,বাজিতপুর,ভৈরব,হোসেনপুর,ইটনা,করিমগঞ্জ,কটিয়াদী,*,কুলিয়ারচর,মিঠামইন,নিকলী,পাকুন্দিয়া,তাড়াইল',
+'মাদারীপুর':'*,কালকিনি,রাজৈর,শিবচর',
+'মানিকগঞ্জ':'ঘিওর,হরিরামপুর,দৌলতপুর,*,শিবালয়,সাটুরিয়া,সিংগাইর',
+'মুন্সিগঞ্জ':'গজারিয়া,লৌহজং,*,সিরাজদিখান,শ্রীনগর,টঙ্গীবাড়ী',
+'নারায়ণগঞ্জ':'আড়াইহাজার,বন্দর,*,রূপগঞ্জ,সোনারগাঁও',
+'নরসিংদী':'বেলাব,মনোহরদী,*,পলাশ,রায়পুরা,শিবপুর',
+'রাজবাড়ী':'বালিয়াকান্দি,গোয়ালন্দ,কালুখালী,পাংশা,*',
+'শরীয়তপুর':'ভেদরগঞ্জ,ডামুড্যা,গোসাইরহাট,নড়িয়া,*,জাজিরা',
+'টাঙ্গাইল':'বাসাইল,ভুঞাপুর,দেলদুয়ার,ঘাটাইল,গোপালপুর,কালিহাতী,মধুপুর,মির্জাপুর,নাগরপুর,সখীপুর,*,ধনবাড়ী',
+'বান্দরবান':'আলীকদম,*,লামা,নাইক্ষ্যংছড়ি,রোয়াংছড়ি,রুমা,থানচি',
+'ব্রাহ্মণবাড়িয়া':'আখাউড়া,আশুগঞ্জ,বাঞ্ছারামপুর,বিজয়নগর,*,কসবা,নবীনগর,নাসিরনগর,সরাইল',
+'চাঁদপুর':'*,ফরিদগঞ্জ,হাইমচর,হাজীগঞ্জ,কচুয়া,মতলব দক্ষিণ,মতলব উত্তর,শাহরাস্তি',
+'চট্টগ্রাম':'আনোয়ারা,বাঁশখালী,বোয়ালখালী,চন্দনাইশ,ফটিকছড়ি,হাটহাজারী,লোহাগাড়া,মীরসরাই,পটিয়া,রাঙ্গুনিয়া,রাউজান,সন্দ্বীপ,সাতকানিয়া,সীতাকুণ্ড,কর্ণফুলী',
+'কুমিল্লা':'বরুড়া,ব্রাহ্মণপাড়া,বুড়িচং,চান্দিনা,চৌদ্দগ্রাম,দাউদকান্দি,দেবিদ্বার,হোমনা,কুমিল্লা আদর্শ সদর,কুমিল্লা সদর দক্ষিণ,লাকসাম,লালমাই,মনোহরগঞ্জ,মেঘনা,মুরাদনগর,নাঙ্গলকোট,তিতাস',
+'কক্সবাজার':'চকরিয়া,*,কুতুবদিয়া,মহেশখালী,পেকুয়া,রামু,টেকনাফ,উখিয়া,ঈদগাঁও',
+'ফেনী':'ছাগলনাইয়া,দাগনভূঁইয়া,*,ফুলগাজী,পরশুরাম,সোনাগাজী',
+'খাগড়াছড়ি':'দীঘিনালা,*,লক্ষ্মীছড়ি,মহালছড়ি,মানিকছড়ি,মাটিরাঙ্গা,পানছড়ি,রামগড়,গুইমারা',
+'লক্ষ্মীপুর':'কমলনগর,*,রায়পুর,রামগঞ্জ,রামগতি',
+'নোয়াখালী':'বেগমগঞ্জ,চাটখিল,কোম্পানীগঞ্জ,হাতিয়া,কবিরহাট,*,সেনবাগ,সোনাইমুড়ী,সুবর্ণচর',
+'রাঙ্গামাটি':'বাঘাইছড়ি,বরকল,কাউখালী,জুরাছড়ি,কাপ্তাই,লংগদু,নানিয়ারচর,রাজস্থলী,*,বিলাইছড়ি',
+'বগুড়া':'আদমদীঘি,*,ধুনট,দুপচাঁচিয়া,গাবতলী,কাহালু,নন্দীগ্রাম,সারিয়াকান্দি,শাজাহানপুর,শেরপুর,শিবগঞ্জ,সোনাতলা',
+'জয়পুরহাট':'আক্কেলপুর,*,কালাই,ক্ষেতলাল,পাঁচবিবি',
+'নওগাঁ':'আত্রাই,বদলগাছী,ধামইরহাট,মহাদেবপুর,মান্দা,নিয়ামতপুর,*,পোরশা,পত্নীতলা,রাণীনগর,সাপাহার',
+'নাটোর':'বাগাতিপাড়া,বড়াইগ্রাম,গুরুদাসপুর,লালপুর,*,সিংড়া,নলডাঙ্গা',
+'চাঁপাইনবাবগঞ্জ':'ভোলাহাট,গোমস্তাপুর,নাচোল,*,শিবগঞ্জ',
+'পাবনা':'আটঘরিয়া,বেড়া,ভাঙ্গুড়া,চাটমোহর,ফরিদপুর,ঈশ্বরদী,*,সাঁথিয়া,সুজানগর',
+'রাজশাহী':'বাঘা,বাগমারা,চারঘাট,দুর্গাপুর,গোদাগাড়ী,মোহনপুর,পবা,পুঠিয়া,তানোর',
+'সিরাজগঞ্জ':'বেলকুচি,চৌহালী,কামারখন্দ,কাজীপুর,রায়গঞ্জ,শাহজাদপুর,*,তাড়াশ,উল্লাপাড়া',
+'বাগেরহাট':'*,চিতলমারী,ফকিরহাট,কচুয়া,মোল্লাহাট,মোংলা,মোরেলগঞ্জ,রামপাল,শরণখোলা',
+'চুয়াডাঙ্গা':'আলমডাঙ্গা,*,দামুড়হুদা,জীবননগর',
+'যশোর':'অভয়নগর,বাঘারপাড়া,চৌগাছা,ঝিকরগাছা,কেশবপুর,মণিরামপুর,শার্শা,*',
+'ঝিনাইদহ':'*,হরিণাকুন্ডু,কালীগঞ্জ,কোটচাঁদপুর,মহেশপুর,শৈলকুপা',
+'খুলনা':'বটিয়াঘাটা,দাকোপ,ডুমুরিয়া,দিঘলিয়া,কয়রা,পাইকগাছা,ফুলতলা,রূপসা,তেরখাদা',
+'কুষ্টিয়া':'ভেড়ামারা,দৌলতপুর,খোকসা,কুমারখালী,*,মিরপুর',
+'মাগুরা':'*,মোহাম্মদপুর,শালিখা,শ্রীপুর',
+'মেহেরপুর':'গাংনী,*,মুজিবনগর',
+'নড়াইল':'কালিয়া,লোহাগড়া,*',
+'সাতক্ষীরা':'আশাশুনি,দেবহাটা,কালিগঞ্জ,কলারোয়া,*,শ্যামনগর,তালা',
+'বরগুনা':'আমতলী,বামনা,*,বেতাগী,পাথরঘাটা,তালতলী',
+'বরিশাল':'আগৈলঝাড়া,বাবুগঞ্জ,বাকেরগঞ্জ,বানারীপাড়া,গৌরনদী,হিজলা,*,মুলাদী,মেহেন্দিগঞ্জ,উজিরপুর',
+'ভোলা':'*,বোরহানউদ্দিন,চরফ্যাশন,দৌলতখান,লালমোহন,মনপুরা,তজুমদ্দিন',
+'ঝালকাঠি':'*,কাঁঠালিয়া,নলছিটি,রাজাপুর',
+'পটুয়াখালী':'বাউফল,দশমিনা,দুমকি,গলাচিপা,কলাপাড়া,মির্জাগঞ্জ,*,রাঙ্গাবালী',
+'পিরোজপুর':'ভান্ডারিয়া,কাউখালী,মঠবাড়িয়া,নাজিরপুর,নেছারাবাদ,*,ইন্দুরকানী',
+'হবিগঞ্জ':'আজমিরীগঞ্জ,বাহুবল,বানিয়াচং,চুনারুঘাট,*,লাখাই,মাধবপুর,নবীগঞ্জ,শায়েস্তাগঞ্জ',
+'মৌলভীবাজার':'বড়লেখা,জুড়ী,কমলগঞ্জ,কুলাউড়া,*,রাজনগর,শ্রীমঙ্গল',
+'সুনামগঞ্জ':'বিশ্বম্ভরপুর,ছাতক,দক্ষিণ সুনামগঞ্জ,দিরাই,ধর্মপাশা,দোয়ারাবাজার,জগন্নাথপুর,জামালগঞ্জ,শাল্লা,*,তাহিরপুর,মধ্যনগর',
+'সিলেট':'বালাগঞ্জ,বিয়ানীবাজার,বিশ্বনাথ,কোম্পানীগঞ্জ,ফেঞ্চুগঞ্জ,গোলাপগঞ্জ,গোয়াইনঘাট,জৈন্তাপুর,কানাইঘাট,*,জকিগঞ্জ,দক্ষিণ সুরমা,ওসমানীনগর',
+'দিনাজপুর':'বিরামপুর,বীরগঞ্জ,বিরল,বোচাগঞ্জ,চিরিরবন্দর,ফুলবাড়ী,ঘোড়াঘাট,হাকিমপুর,কাহারোল,খানসামা,*,নবাবগঞ্জ,পার্বতীপুর',
+'গাইবান্ধা':'ফুলছড়ি,*,গোবিন্দগঞ্জ,পলাশবাড়ী,সাদুল্লাপুর,সাঘাটা,সুন্দরগঞ্জ',
+'কুড়িগ্রাম':'ভুরুঙ্গামারী,চররাজিবপুর,চিলমারী,ফুলবাড়ী,*,নাগেশ্বরী,রাজারহাট,রৌমারী,উলিপুর',
+'লালমনিরহাট':'আদিতমারী,হাতীবান্ধা,কালীগঞ্জ,*,পাটগ্রাম',
+'নীলফামারী':'ডিমলা,ডোমার,জলঢাকা,কিশোরগঞ্জ,*,সৈয়দপুর',
+'পঞ্চগড়':'আটোয়ারী,বোদা,দেবীগঞ্জ,*,তেঁতুলিয়া',
+'রংপুর':'বদরগঞ্জ,গঙ্গাচড়া,কাউনিয়া,মিঠাপুকুর,পীরগাছা,পীরগঞ্জ,*,তারাগঞ্জ',
+'ঠাকুরগাঁও':'বালিয়াডাঙ্গী,হরিপুর,পীরগঞ্জ,রাণীশংকৈল,*',
+'জামালপুর':'বকশীগঞ্জ,দেওয়ানগঞ্জ,ইসলামপুর,*,মাদারগঞ্জ,মেলান্দহ,সরিষাবাড়ী',
+'ময়মনসিংহ':'ভালুকা,ধোবাউড়া,ফুলবাড়িয়া,গফরগাঁও,গৌরীপুর,হালুয়াঘাট,ঈশ্বরগঞ্জ,মুক্তাগাছা,নান্দাইল,ফুলপুর,ত্রিশাল,তারাকান্দা,*',
+'নেত্রকোণা':'আটপাড়া,বারহাট্টা,দুর্গাপুর,কলমাকান্দা,কেন্দুয়া,খালিয়াজুরি,মদন,মোহনগঞ্জ,*,পূর্বধলা',
+'শেরপুর':'ঝিনাইগাতী,নকলা,নালিতাবাড়ী,*,শ্রীবরদী'};
+const UPA=d=>(UPZ[d]||'').split(',').filter(Boolean).map(x=>x==='*'?d+' সদর':x);
+const CS={lv:'কেন্দ্রীয় কমিটি',d:'',a:''};
+const cmCnt=(lv,d,a)=>D.committee.filter(c=>c.lv===lv&&(d==null||c.dist===d)&&(a==null||c.metro===a||c.upz===a)).length;
+function cmRows(lv,d,a){const mt=lv==='মহানগর কমিটি'?a:'',up=lv==='উপজেলা কমিটি'?a:'';return '<div class="cmr">'+ORGS.map(o=>{const m=D.committee.filter(c=>c.lv===lv&&c.org===o&&(c.dist||'')===(d||'')&&(c.metro||'')===(mt||'')&&(c.upz||'')===(up||''));
+ return m.length?m.map(c=>`<a class="card qa" href="#/view/committee/${c.id}"><b>${esc(o)}</b><span>${c.u?'PDF সহ • ':''}বিস্তারিত দেখুন</span></a>`).join(''):`<div class="card qa dim"><b>${esc(o)}</b><span>এখনো যোগ হয়নি</span></div>`}).join('')+'</div>'}
+function cmPick(t,list,k,fn){return `<h3 class="lv">${t}</h3><div class="chips">`+list.map((x,i)=>{const n=fn(x);return `<button class="chip" onclick="cmGo('${k}',${i})">${esc(x)}${n?' <small>('+n.toLocaleString('bn-BD')+')</small>':''}</button>`}).join('')+'</div>'}
+function cmGo(k,i){if(k==='lv'){CS.lv=LEVELS[i];CS.d='';CS.a=''}else if(k==='d'){CS.d=DISTS[i];CS.a=''}else if(k==='m')CS.a=METROS[i];else if(k==='u')CS.a=UPA(CS.d)[i];
+ else if(CS.lv==='উপজেলা কমিটি'&&CS.a)CS.a='';else{CS.d='';CS.a=''}cmRender()}
+function cmRender(){const el=$('#cmx');if(!el)return;const lv=CS.lv,bk='<p><button class="btn o" style="min-height:40px" onclick="cmGo(\'back\',0)">← ফিরে যান</button></p>';
+ let h='<div class="filters">'+LEVELS.map((l,i)=>`<button aria-pressed="${l===lv}" onclick="cmGo('lv',${i})">${l}</button>`).join('')+'</div>';
+ if(lv==='কেন্দ্রীয় কমিটি')h+='<h3 class="lv">কেন্দ্রীয় কমিটি</h3>'+cmRows(lv,'','');
+ else if(lv==='জেলা কমিটি')h+=!CS.d?cmPick('জেলা বাছুন',DISTS,'d',x=>cmCnt(lv,x,null)):bk+`<h3 class="lv">${esc(CS.d)} জেলার সকল কমিটি</h3>`+cmRows(lv,CS.d,'');
+ else if(lv==='মহানগর কমিটি')h+=!CS.a?cmPick('মহানগর বাছুন',METROS,'m',x=>cmCnt(lv,null,x)):bk+`<h3 class="lv">${esc(CS.a)}-এর সকল কমিটি</h3>`+cmRows(lv,'',CS.a);
+ else h+=!CS.d?cmPick('জেলা বাছুন',DISTS,'d',x=>cmCnt(lv,x,null)):!CS.a?bk+cmPick(esc(CS.d)+' জেলার উপজেলা বাছুন',UPA(CS.d),'u',x=>cmCnt(lv,CS.d,x)):bk+`<h3 class="lv">${esc(CS.d)} জেলার ${esc(CS.a)}-এর সকল কমিটি</h3>`+cmRows(lv,CS.d,CS.a);
+ el.innerHTML=h}
+function geoUpd(first){const f=document.querySelector('form.fm');if(!f||!f.level)return;const lv=f.level.value,d=f.district,mt=f.metro,u=f.upazila;
+ const sd=lv==='জেলা কমিটি'||lv==='উপজেলা কমিটি',sm=lv==='মহানগর কমিটি',sx=lv==='উপজেলা কমিটি';
+ d.closest('label').style.display=sd?'':'none';mt.closest('label').style.display=sm?'':'none';u.closest('label').style.display=sx?'':'none';
+ if(!sd)d.selectedIndex=0;if(!sm)mt.selectedIndex=0;
+ const cur=first?f.dataset.u:u.value,opts=sx?UPA(d.value):[];
+ u.innerHTML='<option value="">'+PICK+'</option>'+opts.map(x=>`<option${x===cur?' selected':''}>${esc(x)}</option>`).join('')}
+
 const ORGS=['জাকের পার্টি (মূল দল)','জাকের পার্টি ছাত্র ফ্রন্ট','জাকের পার্টি ছাত্রী ফ্রন্ট','জাকের পার্টি যুব ফ্রন্ট','জাকের পার্টি কিশোর ফ্রন্ট','জাকের পার্টি মহিলা ফ্রন্ট','জাকের পার্টি স্বেচ্ছাসেবক ফ্রন্ট','জাকের পার্টি যুব স্বেচ্ছাসেবক ফ্রন্ট','জাকের পার্টি শ্রমিক ফ্রন্ট','জাকের পার্টি ওলামা ফ্রন্ট','জাকের পার্টি যুব ওলামা ফ্রন্ট','জাকের পার্টি তালাবা ফ্রন্ট','জাকের পার্টি মৎস্যজীবী ফ্রন্ট','জাকের পার্টি ভক্ত ফ্রন্ট'];
 const LEVELS=['কেন্দ্রীয় কমিটি','জেলা কমিটি','মহানগর কমিটি','উপজেলা কমিটি'];
 const T={book:{tb:'books',l:'বই',n:'title',f:[['title','শিরোনাম'],['author','লেখক'],['category','বিভাগ'],['description','বিবরণ','ta'],['cover_url','কভার ছবি','file:image/*'],['pdf_url','PDF ফাইল','file:application/pdf']]},
 video:{tb:'videos',l:'ভিডিও',n:'title',f:[['title','শিরোনাম'],['description','বিবরণ','ta'],['youtube_url','ইউটিউব লিংক'],['thumbnail_url','থাম্বনেইল','file:image/*'],['video_date','তারিখ','date']]},
 leader:{tb:'leaders',l:'নেতা',n:'name',f:[['name','নাম'],['position','পদবি'],['bio','পরিচিতি','ta'],['photo_url','ছবি','file:image/*'],['sort_order','ক্রম','number']]},
-committee:{tb:'committees',l:'কমিটি',n:'name',f:[['org_group','সংগঠন','select:'+ORGS.join('|')],['level','কমিটির স্তর','select:'+LEVELS.join('|')],['name','কমিটির নাম বা এলাকা (যেমন: ঢাকা জেলা কমিটি)'],['description','বিবরণ','ta'],['pdf_url','কমিটির PDF','file:application/pdf']]},
+committee:{tb:'committees',l:'কমিটি',n:'name',f:[['org_group','সংগঠন','select:'+ORGS.join('|')],['level','কমিটির স্তর','select:'+LEVELS.join('|')],['district','জেলা','select:'+PICK+'|'+DISTS.join('|')],['metro','মহানগর','select:'+PICK+'|'+METROS.join('|')],['upazila','উপজেলা','geo'],['name','কমিটির নাম (ঐচ্ছিক, ফাঁকা রাখলে নিজে বানাবে)'],['description','বিবরণ','ta'],['pdf_url','কমিটির PDF','file:application/pdf']]},
 event:{tb:'events',l:'ইভেন্ট',n:'title',f:[['title','শিরোনাম'],['description','বিবরণ','ta'],['location','স্থান'],['image_url','ছবি','file:image/*'],['starts_at','শুরুর সময়','datetime-local']]},
 ann:{tb:'announcements',l:'ঘোষণা',n:'title',f:[['title','শিরোনাম'],['image_url','ছবি','file:image/*'],['body','বিস্তারিত','ta']]},
 org:{tb:'org_pages',l:'সংগঠন-তথ্য',n:'title',f:[['slug','স্লাগ (সংগঠন পাতার জন্য about লিখুন)'],['title','শিরোনাম'],['body','লেখা','ta']]}};
@@ -264,11 +387,12 @@ async function adminLogin(e){e.preventDefault();const f=e.target;A.msg='';const 
  if(r.error)A.msg='লগইন ব্যর্থ। ইমেইল ও পাসওয়ার্ড দেখুন।';else await loadRole(r.data.user);adminRender()}
 async function adminOut(){await sb.auth.signOut();A.user=null;A.role=null;A.edit=undefined;adminRender()}
 function formHtml(r){const t=T[A.tab],isC=A.role==='contributor',sts=isC?['draft','pending']:['draft','pending','published','archived'];
- let h=`<form class="fm card" onsubmit="adminSave(event)"><h3>${r?'সম্পাদনা':'নতুন'}: ${t.l}</h3>`;
+ let h=`<form class="fm card" data-u="${esc((r&&r.upazila)||'')}" onsubmit="adminSave(event)"><h3>${r?'সম্পাদনা':'নতুন'}: ${t.l}</h3>`;
  for(const [n,l,ty] of t.f){const v=r?(r[n]??''):'';
   if(ty==='ta')h+=`<label>${l}<textarea name="${n}">${esc(v)}</textarea></label>`;
   else if(ty==='members'){const m=((r&&r.committee_members)||[]).slice().sort((a,b)=>a.sort_order-b.sort_order).map(x=>x.name+' | '+(x.role_title||'')).join('\n');h+=`<label>${l}<textarea name="members">${esc(m)}</textarea></label>`}
-  else if(ty&&ty.startsWith('select:'))h+=`<label>${l}<select name="${n}">${ty.slice(7).split('|').map(o=>`<option${v===o?' selected':''}>${esc(o)}</option>`).join('')}</select></label>`;
+  else if(ty==='geo')h+=`<label>${l}<select name="upazila"></select></label>`;
+  else if(ty&&ty.startsWith('select:'))h+=`<label>${l}<select name="${n}"${n==='level'||n==='district'?' onchange="geoUpd()"':''}>${ty.slice(7).split('|').map(o=>`<option${v===o?' selected':''}>${esc(o)}</option>`).join('')}</select></label>`;
   else if(ty&&ty.startsWith('file:'))h+=`<label>${l}<input type="file" name="${n}_file" accept="${ty.slice(5)}"></label><input type="hidden" name="${n}" value="${esc(v)}">${v?'<p>বর্তমান ফাইল আছে। নতুন বাছলে বদলাবে।</p>':''}`;
   else{let val=v;if(ty==='datetime-local'&&v){const d=new Date(v);val=new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,16)}
    h+=`<label>${l}<input name="${n}" type="${ty||'text'}" value="${esc(val)}"></label>`}}
@@ -276,11 +400,17 @@ function formHtml(r){const t=T[A.tab],isC=A.role==='contributor',sts=isC?['draft
  if(r&&A.tab!=='org')h+='<h3>প্রিভিউ</h3>'+'<div style="pointer-events:none">'+card(mapRow(A.tab,r),0)+'</div>';return h}
 function shrink(f){return new Promise(r=>{const i=new Image(),u=URL.createObjectURL(f);i.onload=()=>{const k=Math.min(1,1400/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>r(b),'image/jpeg',0.85)};i.onerror=()=>{URL.revokeObjectURL(u);r(null)};i.src=u})}
 async function adminSave(e){e.preventDefault();const f=e.target,t=T[A.tab],o={};A.msg='';const bt=f.querySelector('button.btn');if(bt){bt.disabled=true;bt.textContent='সংরক্ষণ হচ্ছে… অপেক্ষা করুন'}
- try{for(const [n,l,ty] of t.f){if(ty==='members')continue;let v=f[n].value;
+ try{for(const [n,l,ty] of t.f){if(ty==='members')continue;let v=f[n].value;if(v===PICK)v='';
   if(ty&&ty.startsWith('file:')){const fl=f[n+'_file'].files[0];if(fl){if(fl.size>52428800)throw new Error('ফাইল ৫০ MB-এর বেশি');let up=fl,ct=fl.type,nm=fl.name;if(ct.startsWith('image/')){const b=await shrink(fl);if(b){up=b;ct='image/jpeg';nm=nm.replace(/\.\w+$/,'')+'.jpg'}}const p=t.tb+'/'+Date.now()+'-'+nm.replace(/[^A-Za-z0-9._-]/g,'_');const u=await sb.storage.from('media').upload(p,up,{contentType:ct});if(u.error)throw u.error;v=sb.storage.from('media').getPublicUrl(p).data.publicUrl}}
   if(ty==='number')v=v===''?0:Number(v);else if(ty==='datetime-local')v=v?new Date(v).toISOString():null;else if(v==='')v=null;
   o[n]=v}
-  o.status=f.status.value;let id=A.edit&&A.edit.id;
+  o.status=f.status.value;
+  if(A.tab==='committee'){const Lv=o.level;
+   if(Lv==='কেন্দ্রীয় কমিটি'){o.district=null;o.metro=null;o.upazila=null}
+   else if(Lv==='জেলা কমিটি'){if(!o.district)throw new Error('জেলা বাছুন');o.metro=null;o.upazila=null}
+   else if(Lv==='মহানগর কমিটি'){if(!o.metro)throw new Error('মহানগর বাছুন');o.district=null;o.upazila=null}
+   else{if(!o.district||!o.upazila)throw new Error('জেলা ও উপজেলা বাছুন');o.metro=null}
+   if(!o.name)o.name=[o.org_group,o.district||o.metro,o.upazila,Lv].filter(Boolean).join(' ')}let id=A.edit&&A.edit.id;
   const r=id?await sb.from(t.tb).update(o).eq('id',id).select().single():await sb.from(t.tb).insert(o).select().single();if(r.error)throw r.error;
   A.edit=undefined;A.msg='সংরক্ষণ হয়েছে।'}catch(x){A.msg='সংরক্ষণ করা যায়নি: '+(x.message||x)}
  await adminRender();window.scrollTo(0,0);loadAll()}
@@ -323,11 +453,11 @@ async function adminRender(){const el=$('#adm');if(!el)return;
  if(A.tab==='site'){const r=await sb.from('site_settings').select('*').eq('id',1).maybeSingle();
   if(r.error){el.innerHTML=h+'<p>সেটিংস টেবিল পাওয়া যায়নি। আগে SQL চালান।</p>';return}const d=r.data||{};
   el.innerHTML=h+`<form class="fm card" onsubmit="adminSaveSite(event)"><h3>সাইট সেটিংস</h3><label>সাইটের নাম<input name="site_name" value="${esc(d.site_name||SITE.name)}" required></label><label>স্লোগান<input name="slogan" value="${esc(d.slogan||SITE.slogan)}"></label><label>যোগাযোগ (প্রতি লাইনে একটি: নাম | তথ্য)<textarea name="contacts" placeholder="ফোন | ০১XXXXXXXXX&#10;ইমেইল | name@example.com&#10;ঠিকানা | ...">${esc(d.contacts||'')}</textarea></label><p>লাইন যোগ করলে যোগ হবে, লাইন মুছলে মুছে যাবে। সব মুছলে সাইট থেকে যোগাযোগ অংশ লুকিয়ে যাবে।</p><label>নতুন লোগো (চৌকো JPG, PNG বা WEBP)<input type="file" name="logo_file" accept="image/jpeg,image/png,image/webp"></label><input type="hidden" name="logo_url" value="${esc(d.logo_url||'')}"><p>বর্তমান লোগো:</p><img src="${esc(su(d.logo_url)||IMG.logo)}" alt="" style="width:96px;border-radius:16px"><div class="bar2"><button class="btn">সংরক্ষণ</button></div></form>`;return}
- if(A.edit!==undefined){el.innerHTML=h+formHtml(A.edit);return}
+ if(A.edit!==undefined){el.innerHTML=h+formHtml(A.edit);if(A.tab==='committee')geoUpd(true);return}
  const t=T[A.tab],r=await sb.from(t.tb).select(A.tab==='committee'?'*,committee_members(*)':'*').order('created_at',{ascending:false});
  if(r.error){el.innerHTML=h+'<p>তথ্য আনা যায়নি: '+esc(r.error.message)+'</p>';return}
  A.rows=r.data;h+=`<div class="bar2"><button class="btn" onclick="A.edit=null;A.msg='';adminRender()">+ নতুন যোগ করুন</button></div>`;
- h+=r.data.length?r.data.map(x=>`<div class="card" style="margin-bottom:12px"><span class="tag">${STL[x.status]}</span><h3>${esc(x[t.n])}</h3>${x.level?`<p>${esc((x.org_group||'')+' • '+x.level)}</p>`:''}<div class="bar2"><button class="btn o" onclick="adminEdit('${x.id}')">সম্পাদনা</button>${A.role==='super_admin'?`<button class="btn o" onclick="adminDel('${x.id}')">মুছুন</button>`:''}</div></div>`).join(''):'<div class="empty">এখনো কিছু যোগ হয়নি।</div>';
+ h+=r.data.length?r.data.map(x=>`<div class="card" style="margin-bottom:12px"><span class="tag">${STL[x.status]}</span><h3>${esc(x[t.n])}</h3>${x.level?`<p>${esc((x.org_group||'')+' • '+x.level+(x.district?' • '+x.district:'')+(x.metro?' • '+x.metro:'')+(x.upazila?' • '+x.upazila:''))}</p>`:''}<div class="bar2"><button class="btn o" onclick="adminEdit('${x.id}')">সম্পাদনা</button>${A.role==='super_admin'?`<button class="btn o" onclick="adminDel('${x.id}')">মুছুন</button>`:''}</div></div>`).join(''):'<div class="empty">এখনো কিছু যোগ হয়নি।</div>';
  el.innerHTML=h}
 $('#navl').innerHTML=PAGES.map(p=>`<li><a href="#${p[0]}">${p[1]}</a></li>`).join('');
 $('#fl').innerHTML=PAGES.slice(1).map(p=>`<a href="#${p[0]}">${p[1]}</a>`).join('');
