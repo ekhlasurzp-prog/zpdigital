@@ -230,17 +230,17 @@ function track(){if(!sb)return;try{if(location.hash.startsWith('#/admin')||(type
 function intro(){try{
  if(location.hash.startsWith('#/admin')||sessionStorage.getItem('zpintro')||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
  const o=document.createElement('div');o.id='introv';
- o.innerHTML='<video playsinline webkit-playsinline preload="auto" src="intro.mp4"></video><button class="snd" type="button" hidden>▶ শুরু করতে ছুঁয়ে দিন</button>';
+ o.innerHTML='<video playsinline webkit-playsinline preload="auto" src="intro.mp4"></video>';
  document.body.appendChild(o);document.body.style.overflow='hidden';
- const v=o.querySelector('video'),b=o.querySelector('.snd');let over=false,ok=false,tm;
+ const v=o.querySelector('video');let over=false,ok=false,tm;
  const close=()=>{if(over)return;over=true;clearTimeout(tm);sessionStorage.setItem('zpintro','1');o.classList.add('out');document.body.style.overflow='';setTimeout(()=>o.remove(),700)};
  const fail=()=>{if(over)return;over=true;clearTimeout(tm);o.remove();document.body.style.overflow='';introCss()};
- v.addEventListener('playing',()=>{ok=true;b.hidden=true;clearTimeout(tm);tm=setTimeout(close,16000)});
+ v.addEventListener('playing',()=>{ok=true;clearTimeout(tm);tm=setTimeout(close,16000)});
  v.addEventListener('ended',close);v.addEventListener('error',fail);
- b.addEventListener('click',()=>{b.hidden=true;const q=v.play();if(q&&q.catch)q.catch(fail)});
  tm=setTimeout(()=>{if(!ok)fail()},5000);
+ v.muted=false;
  const p=v.play();
- if(p&&p.catch)p.catch(()=>{clearTimeout(tm);b.hidden=false;tm=setTimeout(close,20000)});
+ if(p&&p.catch)p.catch(()=>{v.muted=true;const q=v.play();if(q&&q.catch)q.catch(fail)});
 }catch(e){document.body.style.overflow=''}}
 function introCss(){try{
  if(location.hash.startsWith('#/admin')||sessionStorage.getItem('zpintro')||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
