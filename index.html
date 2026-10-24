@@ -123,6 +123,7 @@ details.og{border:1px solid var(--line);border-radius:12px;margin:0 0 12px;backg
 .flagw .flag:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,rgba(0,0,0,.16),rgba(255,255,255,.1) 30%,rgba(0,0,0,.18) 62%,rgba(255,255,255,.08))}
 @keyframes fw{0%,100%{transform:translateY(calc(var(--i)*.5px))}50%{transform:translateY(calc(var(--i)*-.5px))}}
 @media(prefers-reduced-motion:reduce){.flagw .flag i{animation:none}}
+.pr{background:rgba(201,162,39,.2);color:#f2d77a;border:1px solid rgba(201,162,39,.6);border-radius:99px;padding:0 8px;font-size:12px;font-weight:600;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -165,15 +166,15 @@ function sform(v,t){const o=[['all','সব'],['book','বই'],['video','ভি
 function filt(items,cats){return `<div class="filters" role="group" aria-label="ফিল্টার">${cats.map((c,i)=>`<button aria-pressed="${i==0}" data-c="${c}">${c}</button>`).join('')}</div><div id="fl2">${list(items)}</div>`}
 const R={
 "/"(){return `<div class="hero"><span class="cres" aria-hidden="true"></span><div class="wrap hg"><div class="hl"><img src="${IMG.logo}" alt="ZP Digital লোগো" width="230" height="230"></div><div><h1>${esc(SITE.slogan)}</h1><p>বই, ভিডিও, ইভেন্ট ও ঘোষণা — এক জায়গায়, বাংলায়।</p><div class="cta"><a class="btn" href="#/library">বই পড়ুন</a><a class="btn o" href="#/events">ইভেন্ট দেখুন</a></div>${sform()}</div></div></div>
-${hid('/about')?'':head('সংগঠন পরিচিতি',`<div class="split"><div><p>ZP Digital সংগঠনের অফিসিয়াল ডিজিটাল প্ল্যাটফর্ম। এখানে সংগঠনের পরিচিতি, নেতৃবৃন্দ, কমিটি, গ্রন্থাগার, ইভেন্ট ও ঘোষণা প্রকাশিত হবে।</p><p><a class="btn o" href="#/about">বিস্তারিত পড়ুন</a></p></div><div>${flagHtml()}</div></div>`)+end}
+${hid('/about')?'':head('সংগঠন পরিচিতি',`<div class="split"><div><p>ZP Digital হলো জাকের পার্টির অফিসিয়াল ডিজিটাল প্ল্যাটফর্ম। এখানে জাকের পার্টির পরিচয়, নেতৃবৃন্দের পরিচয়, কমিটি, সমাবেশের ভিডিও, আসন্ন অনুষ্ঠানের সময়সূচি ও পার্টির গুরুত্বপূর্ণ ঘোষণা জানতে পারবেন।</p><p><a class="btn o" href="#/about">বিস্তারিত পড়ুন</a></p></div><div>${flagHtml()}</div></div>`)+end}
 ${head('দ্রুত প্রবেশ',`<div class="grid">${PAGES.slice(1,7).filter(p=>!hid(p[0])).map(p=>`<a class="card qa" href="#${p[0]}"><b>${p[1]}</b><span>${{'/about':'লক্ষ্য ও পরিচয়','/leaders':'নেতৃবৃন্দের পরিচিতি','/committees':'কমিটি ও সদস্য','/library':'ডিজিটাল বই','/events':'অনুষ্ঠানসূচি','/videos':'ভিডিও ও প্রোগ্রাম','/announcements':'গুরুত্বপূর্ণ ঘোষণা'}[p[0]]}</span></a>`).join('')}</div>`)+end}
 ${hid('/library')?'':head('নির্বাচিত বই',note+list(D.book.slice(0,3)))+end}
 ${hid('/events')?'':head('আসন্ন ইভেন্ট',list(D.event.slice(0,3)))+end}
 ${recentVideos()}
 ${hid('/announcements')?'':head('গুরুত্বপূর্ণ ঘোষণা',list(D.ann.slice(0,3)))+end}`},
 "/about"(){const live=LIVE&&ORGP.length;
- const txt=live?ORGP.map((x,i)=>`<details class="og"${i===0?' open':''}><summary>${esc(x.t)}</summary><div class="in dt">${md(x.full)}</div></details>`).join(''):'<p><i>[সংগঠনের যাচাইকৃত পরিচিতি, লক্ষ্য ও ইতিহাস এখানে যোগ হবে।]</i></p>';
- return head('সংগঠন পরিচিতি',(live?'':note)+`<div class="split"><div>${txt}<p>${esc(SITE.name)}-এর মূল স্লোগান: <b>${esc(SITE.slogan)}</b></p></div><div>${flagHtml()}<img class="rose" style="margin-top:14px" src="${IMG.rose}" alt="জাকের পার্টির গোলাপ প্রতীক"></div></div>`)+end},
+ const txt=live?ORGP.map((x,i)=>`<details class="og"><summary>${esc(x.t)}</summary><div class="in dt">${md(x.full)}</div></details>`).join(''):'<p><i>[সংগঠনের যাচাইকৃত পরিচিতি, লক্ষ্য ও ইতিহাস এখানে যোগ হবে।]</i></p>';
+ return head('সংগঠন পরিচিতি',(live?'':note)+`<div class="split"><div>${txt}<p><b>${esc(SITE.slogan)}</b></p></div><div>${flagHtml()}<img class="rose" style="margin-top:14px" src="${IMG.rose}" alt="জাকের পার্টির গোলাপ প্রতীক"></div></div>`)+end},
 "/leaders"(){return head('নেতৃবৃন্দ',note+list(D.leader))+end},
 "/committees"(){setTimeout(cmRender,0);return head('কমিটি',(LIVE?'':note)+'<div id="cmx"></div>')+end},
 "/library"(){return head('ডিজিটাল গ্রন্থাগার',note+filt(D.book,['সব',...new Set(D.book.map(b=>b.c).filter(Boolean))]))+end},
@@ -254,10 +255,14 @@ function introCss(){try{
 function committeesPage(p){
  const seg=p.split('/').filter(Boolean).slice(1).map(x=>{try{return decodeURIComponent(x)}catch(e){return x}}),[t,a,b]=seg;
  const L=(...x)=>'#/committees'+x.map(q=>'/'+encodeURIComponent(q)).join('');
- const T4=[['central','কেন্দ্রীয় কমিটি','মূল দল ও সকল সহযোগী সংগঠনের কেন্দ্রীয় কমিটি'],['district','জেলা কমিটি','৬৪ জেলার কমিটি'],['metro','মহানগর কমিটি','মহানগর কমিটিসমূহ'],['upazila','উপজেলা কমিটি','জেলাভিত্তিক উপজেলা কমিটি']];
+ const T4=[['central','কেন্দ্রীয় কমিটি','মূল দল ও সকল সহযোগী সংগঠনের কেন্দ্রীয় কমিটি'],['district','জেলা কমিটি','১০ বিভাগের ৬৪ জেলার কমিটি'],['metro','মহানগর কমিটি','মহানগর কমিটিসমূহ'],['upazila','উপজেলা কমিটি','জেলাভিত্তিক উপজেলা কমিটি']];
  const chips='<div class="chips">'+T4.map(x=>`<a href="${L(x[0])}"${x[0]===t?' aria-current="page"':''}>${x[1]}</a>`).join('')+'</div>';
  const bc=(...x)=>'<p class="bc">'+x.map(([n,h])=>h?`<a href="${h}">${esc(n)}</a>`:`<b>${esc(n)}</b>`).join(' › ')+'</p>';
  const pre=LIVE?'':note;
+ const dvOf=d=>DIVS.find(x=>x.d.includes(d));
+ const cr=(k,a)=>[[T4.find(x=>x[0]===k)[1],L(k)]].concat(dvOf(a)?[[dvOf(a).n,L(k,dvOf(a).n)]]:[]);
+ const dvGrid=k=>`<p class="note">দেশে ১০টি বিভাগ: ৮টি সরকারি এবং ২টি প্রস্তাবিত (কুমিল্লা ও ফরিদপুর)।</p><div class="grid">${DIVS.map(x=>`<a class="card qa" href="${L(k,x.n)}"><b>${esc(x.n)}${x.p?' <small class="pr">প্রস্তাবিত</small>':''}</b><span>${x.d.length.toLocaleString('bn-BD')}টি জেলা</span></a>`).join('')}</div><details class="og" style="margin-top:14px"><summary>সব ৬৪ জেলা এক তালিকায় খুঁজুন</summary><div class="in">${grid(DISTS,d=>L(k,d))}</div></details>`;
+ const dvNote=x=>x&&x.p?'<p class="note">এটি প্রস্তাবিত বিভাগ (জনপ্রশাসন সংস্কার কমিশনের সুপারিশ)। এখনো সরকারিভাবে চালু হয়নি।</p>':'';
  const rows=f=>ORGS.map(o=>{const it=D.committee.filter(c=>c.org===o&&f(c));
   return `<div class="card" style="margin-bottom:12px"><h3>${esc(o)}</h3>${it.length?it.map(c=>`<div><p class="sub">${esc(c.t)}</p>${c.full?md(c.full):''}${c.u?`<p><a class="btn" href="${esc(c.u)}" target="_blank" rel="noopener">কমিটির PDF পড়ুন</a></p>`:''}</div>`).join(''):'<p style="margin:0;color:var(--mut)">এখনো যোগ করা হয়নি।</p>'}</div>`}).join('');
  const grid=(arr,h)=>`<input class="fi" placeholder="নাম দিয়ে খুঁজুন" aria-label="খুঁজুন" oninput="const v=this.value.trim();document.querySelectorAll('.dl a').forEach(e=>e.style.display=e.textContent.includes(v)?'':'none')"><div class="dl">${arr.map(x=>`<a href="${h(x)}">${esc(x)}</a>`).join('')}</div>`;
@@ -265,15 +270,19 @@ function committeesPage(p){
  const ttl=T4.find(x=>x[0]===t)[1];
  if(t==='central')return head(ttl,pre+chips+rows(c=>c.lv==='কেন্দ্রীয় কমিটি'))+end;
  if(t==='district'){
-  if(!a)return head(ttl,pre+chips+grid(DISTS,d=>L('district',d)))+end;
-  return head(esc(a)+' জেলার সকল কমিটি',pre+chips+bc([ttl,L('district')],[a])+rows(c=>c.lv==='জেলা কমিটি'&&c.dist===a)+`<p><a class="btn o" href="${L('upazila',a)}">${esc(a)} জেলার উপজেলা কমিটি দেখুন</a></p>`)+end}
+  if(!a)return head(ttl,pre+chips+dvGrid('district'))+end;
+  const dvv=DIVS.find(x=>x.n===a);
+  if(dvv)return head(esc(a),pre+chips+bc([ttl,L('district')],[a])+dvNote(dvv)+grid(dvv.d,d=>L('district',d)))+end;
+  return head(esc(a)+' জেলার সকল কমিটি',pre+chips+bc(...cr('district',a),[a])+rows(c=>c.lv==='জেলা কমিটি'&&c.dist===a)+`<p><a class="btn o" href="${L('upazila',a)}">${esc(a)} জেলার উপজেলা কমিটি দেখুন</a></p>`)+end}
  if(t==='metro'){
   if(!a)return head(ttl,pre+chips+grid(METROS,m=>L('metro',m)))+end;
   return head(esc(a)+'-এর সকল কমিটি',pre+chips+bc([ttl,L('metro')],[a])+rows(c=>c.lv==='মহানগর কমিটি'&&c.metro===a))+end}
- if(!a)return head(ttl,pre+chips+grid(DISTS,d=>L('upazila',d)))+end;
+ if(!a)return head(ttl,pre+chips+dvGrid('upazila'))+end;
+ const dvu=DIVS.find(x=>x.n===a);
+ if(dvu)return head(esc(a),pre+chips+bc([ttl,L('upazila')],[a])+dvNote(dvu)+grid(dvu.d,d=>L('upazila',d)))+end;
  const us=[...new Set([...UPA(a),...D.committee.filter(c=>c.lv==='উপজেলা কমিটি'&&c.dist===a&&c.upz).map(c=>c.upz)])];
- if(!b)return head(esc(a)+' জেলার উপজেলা',pre+chips+bc([ttl,L('upazila')],[a])+(us.length?`<div class="dl">${us.map(u=>`<a href="${L('upazila',a,u)}">${esc(u)}</a>`).join('')}</div>`:'<div class="empty">এই জেলার উপজেলা কমিটি এখনো যোগ করা হয়নি।</div>'))+end;
- return head(esc(a)+' জেলা, '+esc(b)+' উপজেলার সকল কমিটি',pre+chips+bc([ttl,L('upazila')],[a,L('upazila',a)],[b])+rows(c=>c.lv==='উপজেলা কমিটি'&&c.dist===a&&c.upz===b))+end}
+ if(!b)return head(esc(a)+' জেলার উপজেলা',pre+chips+bc(...cr('upazila',a),[a])+(us.length?`<div class="dl">${us.map(u=>`<a href="${L('upazila',a,u)}">${esc(u)}</a>`).join('')}</div>`:'<div class="empty">এই জেলার উপজেলা কমিটি এখনো যোগ করা হয়নি।</div>'))+end;
+ return head(esc(a)+' জেলা, '+esc(b)+' উপজেলার সকল কমিটি',pre+chips+bc(...cr('upazila',a),[a,L('upazila',a)],[b])+rows(c=>c.lv==='উপজেলা কমিটি'&&c.dist===a&&c.upz===b))+end}
 function flagHtml(){let t='';for(let i=0;i<14;i++)t+=`<i style="--i:${i}"></i>`;return `<div class="flagw" role="img" aria-label="দলীয় পতাকা: সবুজ জমিনে সাদা চাঁদ, তিন তারা ও লাল গোলাপ" style="--f:url('${IMG.flag}')"><b class="pole"></b><div class="flag">${t}</div></div>`}
 const yid=u=>{const m=/(?:youtu\.be\/|youtube\.com\/(?:live\/|embed\/|shorts\/)|[?&]v=)([A-Za-z0-9_-]{11})/.exec(u||'');return m?m[1]:''};
 const fdd=v=>v?new Date(v).toLocaleDateString('bn-BD',{dateStyle:'medium'}):'';
@@ -397,10 +406,21 @@ function geoUpd(first){const f=document.querySelector('form.fm');if(!f||!f.level
 
 const ORGS=['জাকের পার্টি (মূল দল)','জাকের পার্টি ছাত্র ফ্রন্ট','জাকের পার্টি ছাত্রী ফ্রন্ট','জাকের পার্টি যুব ফ্রন্ট','জাকের পার্টি কিশোর ফ্রন্ট','জাকের পার্টি মহিলা ফ্রন্ট','জাকের পার্টি স্বেচ্ছাসেবক ফ্রন্ট','জাকের পার্টি যুব স্বেচ্ছাসেবক ফ্রন্ট','জাকের পার্টি শ্রমিক ফ্রন্ট','জাকের পার্টি ওলামা ফ্রন্ট','জাকের পার্টি যুব ওলামা ফ্রন্ট','জাকের পার্টি তালাবা ফ্রন্ট','জাকের পার্টি মৎস্যজীবী ফ্রন্ট','জাকের পার্টি ভক্ত ফ্রন্ট'];
 const LEVELS=['কেন্দ্রীয় কমিটি','জেলা কমিটি','মহানগর কমিটি','উপজেলা কমিটি'];
+const DIVS=[
+{n:'ঢাকা বিভাগ',d:['ঢাকা','গাজীপুর','কিশোরগঞ্জ','মানিকগঞ্জ','মুন্সিগঞ্জ','নারায়ণগঞ্জ','নরসিংদী','টাঙ্গাইল']},
+{n:'চট্টগ্রাম বিভাগ',d:['বান্দরবান','চট্টগ্রাম','কক্সবাজার','খাগড়াছড়ি','রাঙ্গামাটি']},
+{n:'রাজশাহী বিভাগ',d:['বগুড়া','জয়পুরহাট','নওগাঁ','নাটোর','চাঁপাইনবাবগঞ্জ','পাবনা','রাজশাহী','সিরাজগঞ্জ']},
+{n:'খুলনা বিভাগ',d:['বাগেরহাট','চুয়াডাঙ্গা','যশোর','ঝিনাইদহ','খুলনা','কুষ্টিয়া','মাগুরা','মেহেরপুর','নড়াইল','সাতক্ষীরা']},
+{n:'বরিশাল বিভাগ',d:['বরগুনা','বরিশাল','ভোলা','ঝালকাঠি','পটুয়াখালী','পিরোজপুর']},
+{n:'সিলেট বিভাগ',d:['হবিগঞ্জ','মৌলভীবাজার','সুনামগঞ্জ','সিলেট']},
+{n:'রংপুর বিভাগ',d:['দিনাজপুর','গাইবান্ধা','কুড়িগ্রাম','লালমনিরহাট','নীলফামারী','পঞ্চগড়','রংপুর','ঠাকুরগাঁও']},
+{n:'ময়মনসিংহ বিভাগ',d:['জামালপুর','ময়মনসিংহ','নেত্রকোণা','শেরপুর']},
+{n:'কুমিল্লা বিভাগ',p:1,d:['ব্রাহ্মণবাড়িয়া','চাঁদপুর','কুমিল্লা','ফেনী','লক্ষ্মীপুর','নোয়াখালী']},
+{n:'ফরিদপুর বিভাগ',p:1,d:['ফরিদপুর','গোপালগঞ্জ','মাদারীপুর','রাজবাড়ী','শরীয়তপুর']}];
 const T={book:{tb:'books',l:'বই',n:'title',f:[['title','শিরোনাম'],['author','লেখক'],['category','বিভাগ'],['description','বিবরণ','ta'],['cover_url','কভার ছবি','file:image/*'],['pdf_url','PDF ফাইল','file:application/pdf']]},
 video:{tb:'videos',l:'ভিডিও',n:'title',f:[['title','শিরোনাম'],['description','বিবরণ','ta'],['youtube_url','ইউটিউব লিংক'],['thumbnail_url','থাম্বনেইল','file:image/*'],['video_date','তারিখ','date']]},
 leader:{tb:'leaders',l:'নেতা',n:'name',f:[['name','নাম'],['position','পদবি'],['bio','পরিচিতি','ta'],['photo_url','ছবি','file:image/*'],['sort_order','ক্রম','number']]},
-committee:{tb:'committees',l:'কমিটি',n:'name',f:[['org_group','সংগঠন','select:'+ORGS.join('|')],['level','কমিটির স্তর','select:'+LEVELS.join('|')],['district','জেলা','select:'+PICK+'|'+DISTS.join('|')],['metro','মহানগর','select:'+PICK+'|'+METROS.join('|')],['upazila','উপজেলা','geo'],['name','কমিটির নাম (ঐচ্ছিক, ফাঁকা রাখলে নিজে বানাবে)'],['description','বিবরণ','ta'],['pdf_url','কমিটির PDF','file:application/pdf']]},
+committee:{tb:'committees',l:'কমিটি',n:'name',f:[['org_group','সংগঠন','select:'+ORGS.join('|')],['level','কমিটির স্তর','select:'+LEVELS.join('|')],['district','জেলা','select:'+PICK+'|'+DIVS.flatMap(x=>x.d).join('|')],['metro','মহানগর','select:'+PICK+'|'+METROS.join('|')],['upazila','উপজেলা','geo'],['name','কমিটির নাম (ঐচ্ছিক, ফাঁকা রাখলে নিজে বানাবে)'],['description','বিবরণ','ta'],['pdf_url','কমিটির PDF','file:application/pdf']]},
 event:{tb:'events',l:'ইভেন্ট',n:'title',f:[['title','শিরোনাম'],['description','বিবরণ','ta'],['location','স্থান'],['image_url','ছবি','file:image/*'],['starts_at','শুরুর সময়','datetime-local']]},
 ann:{tb:'announcements',l:'ঘোষণা',n:'title',f:[['title','শিরোনাম'],['image_url','ছবি','file:image/*'],['body','বিস্তারিত','ta']]},
 org:{tb:'org_pages',l:'সংগঠন-তথ্য',n:'title',f:[['slug','স্লাগ (সংগঠন পাতার জন্য about লিখুন)'],['title','শিরোনাম'],['body','লেখা','ta']]}};
