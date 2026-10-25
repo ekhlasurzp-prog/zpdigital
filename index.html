@@ -202,8 +202,8 @@ const fd=v=>v?new Date(v).toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'
 const ROLE={super_admin:'প্রধান প্রশাসক',editor:'সম্পাদক',contributor:'অবদানকারী'};
 const PGN={...Object.fromEntries(PAGES.map(p=>[p[0],p[1]])),'/search':'অনুসন্ধান','/view/book':'বই (বিস্তারিত)','/view/video':'ভিডিও (বিস্তারিত)','/view/leader':'নেতা (বিস্তারিত)','/view/committee':'কমিটি (বিস্তারিত)','/view/event':'ইভেন্ট (বিস্তারিত)','/view/ann':'ঘোষণা (বিস্তারিত)'};
 const STL={draft:'খসড়া',pending:'অনুমোদনের অপেক্ষায়',published:'প্রকাশিত',archived:'আর্কাইভ'};
-let SITE={hidden:'',contacts:'',loaded:false,name:'ZP Digital',slogan:'সত্য তরিকার প্রচারে ZP Digital।'};
-try{const c=JSON.parse(localStorage.getItem('zpsite')||'null');if(c){SITE.name=c.name||SITE.name;SITE.slogan=c.slogan||SITE.slogan;if(su(c.logo))IMG.logo=c.logo;SITE.contacts=c.contacts||'';SITE.loaded=!!c.loaded;SITE.hidden=c.hidden||''}}catch(e){}
+let SITE={introUrl:'',introOff:false,ic:0,hidden:'',contacts:'',loaded:false,name:'ZP Digital',slogan:'সত্য তরিকার প্রচারে ZP Digital।'};
+try{const c=JSON.parse(localStorage.getItem('zpsite')||'null');if(c){SITE.name=c.name||SITE.name;SITE.slogan=c.slogan||SITE.slogan;if(su(c.logo))IMG.logo=c.logo;SITE.contacts=c.contacts||'';SITE.loaded=!!c.loaded;SITE.hidden=c.hidden||'';SITE.introUrl=su(c.intro)||'';SITE.introOff=!!c.ioff;SITE.ic=c.ic?1:0}}catch(e){}
 function contactHtml(){const bd='০১২৩৪৫৬৭৮৯';return (SITE.contacts||'').split('\n').map(x=>x.trim()).filter(Boolean).map(l=>{const i=l.indexOf('|'),lb=i>=0?l.slice(0,i).trim():'',v=i>=0?l.slice(i+1).trim():l;let h=esc(v);
  if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))h=`<a href="mailto:${esc(v)}">${esc(v)}</a>`;
  else if(/^https?:\/\//i.test(v))h=`<a href="${esc(v)}" target="_blank" rel="noopener">${esc(v)}</a>`;
@@ -218,8 +218,8 @@ document.querySelectorAll('.brand span').forEach(e=>e.textContent=SITE.name);
  const f=$('#fsl');if(f)f.textContent=SITE.slogan;
  const c=$('#fcp');if(c)c.textContent='© '+SITE.name+'।'+(LIVE?'':' এই সাইটে প্রদর্শিত নমুনা তথ্য যাচাইকৃত নয়।')}
 async function loadSite(){try{const r=await sb.from('site_settings').select('*').eq('id',1).maybeSingle();
- if(r.data){SITE.name=r.data.site_name||SITE.name;SITE.slogan=r.data.slogan||SITE.slogan;if(su(r.data.logo_url))IMG.logo=r.data.logo_url;SITE.contacts=r.data.contacts||'';SITE.loaded=true;SITE.hidden=r.data.hidden_pages||'';
-  localStorage.setItem('zpsite',JSON.stringify({name:SITE.name,slogan:SITE.slogan,logo:r.data.logo_url||'',contacts:SITE.contacts,loaded:true,hidden:SITE.hidden}))}applySite()}catch(e){}}
+ if(r.data){SITE.name=r.data.site_name||SITE.name;SITE.slogan=r.data.slogan||SITE.slogan;if(su(r.data.logo_url))IMG.logo=r.data.logo_url;SITE.contacts=r.data.contacts||'';SITE.loaded=true;SITE.hidden=r.data.hidden_pages||'';SITE.introUrl=su(r.data.intro_url)||'';SITE.introOff=!!r.data.intro_off;SITE.ic=1;
+  localStorage.setItem('zpsite',JSON.stringify({name:SITE.name,slogan:SITE.slogan,logo:r.data.logo_url||'',contacts:SITE.contacts,loaded:true,hidden:SITE.hidden,intro:SITE.introUrl,ioff:SITE.introOff,ic:1}))}applySite()}catch(e){}}
 const plain=s=>String(s||'').replace(/\*\*/g,'').replace(/#{1,6}\s*/g,'');
 function recentVideos(){if(hid('/videos'))return '';if(!LIVE)return head('সাম্প্রতিক ভিডিও','<div class="grid sm vd">'+D.video.slice(0,4).map(card).join('')+'</div>')+end;
  const cut=Date.now()-48*36e5,r=D.video.filter(v=>v.pub&&new Date(v.pub)>=cut).sort((a,b)=>new Date(b.pub)-new Date(a.pub)).slice(0,4);
@@ -228,18 +228,24 @@ function track(){if(!sb)return;try{if(location.hash.startsWith('#/admin')||(type
  let id=localStorage.getItem('zpv');if(!id){id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2);localStorage.setItem('zpv',id)}
  const p=(location.hash.slice(1).split('?')[0]||'/').split('/').slice(0,3).join('/').slice(0,60)||'/';
  sb.from('site_visits').insert({visitor:id,path:p}).then(()=>{},()=>{})}catch(e){}}
-function intro(){try{
+async function introCfg(){try{const r=await sb.from('site_settings').select('*').eq('id',1).maybeSingle();
+ if(r.data){SITE.introUrl=su(r.data.intro_url)||'';SITE.introOff=!!r.data.intro_off;SITE.ic=1;
+  const c=JSON.parse(localStorage.getItem('zpsite')||'{}');c.intro=SITE.introUrl;c.ioff=SITE.introOff;c.ic=1;localStorage.setItem('zpsite',JSON.stringify(c))}}catch(e){}}
+async function intro(){try{
  if(location.hash.startsWith('#/admin')||sessionStorage.getItem('zpintro')||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+ if(SITE.ic&&SITE.introOff)return;
  const o=document.createElement('div');o.id='introv';
- o.innerHTML='<video playsinline webkit-playsinline preload="auto" src="intro.mp4"></video>';
+ o.innerHTML='<video playsinline webkit-playsinline preload="auto"></video>';
  document.body.appendChild(o);document.body.style.overflow='hidden';
  const v=o.querySelector('video');let over=false,ok=false,tm;
  const close=()=>{if(over)return;over=true;clearTimeout(tm);sessionStorage.setItem('zpintro','1');o.classList.add('out');document.body.style.overflow='';setTimeout(()=>o.remove(),700)};
  const fail=()=>{if(over)return;over=true;clearTimeout(tm);o.remove();document.body.style.overflow='';introCss()};
+ if(!SITE.ic&&sb)await Promise.race([introCfg(),new Promise(r=>setTimeout(r,1500))]);
+ if(SITE.introOff){over=true;o.remove();document.body.style.overflow='';return}
  v.addEventListener('playing',()=>{ok=true;clearTimeout(tm);tm=setTimeout(close,16000)});
  v.addEventListener('ended',close);v.addEventListener('error',fail);
- tm=setTimeout(()=>{if(!ok)fail()},5000);
- v.muted=false;
+ tm=setTimeout(()=>{if(!ok)fail()},6000);
+ v.src=SITE.introUrl||'intro.mp4';v.muted=false;
  const p=v.play();
  if(p&&p.catch)p.catch(()=>{v.muted=true;const q=v.play();if(q&&q.catch)q.catch(fail)});
 }catch(e){document.body.style.overflow=''}}
@@ -467,7 +473,10 @@ async function adminSave(e){e.preventDefault();const f=e.target,t=T[A.tab],o={};
 async function adminSaveSite(e){e.preventDefault();const f=e.target;A.msg='';
  try{let u=f.logo_url.value||null;const fl=f.logo_file.files[0];
   if(fl){if(fl.size>5242880)throw new Error('লোগো ৫ MB-এর বেশি');const p='site/'+Date.now()+'-'+fl.name.replace(/[^A-Za-z0-9._-]/g,'_');const up=await sb.storage.from('media').upload(p,fl,{contentType:fl.type});if(up.error)throw up.error;u=sb.storage.from('media').getPublicUrl(p).data.publicUrl}
-  const r=await sb.from('site_settings').upsert({id:1,site_name:f.site_name.value.trim(),slogan:f.slogan.value.trim()||null,logo_url:u,contacts:f.contacts.value.trim()||null,hidden_pages:[...f.querySelectorAll('input[name=show]')].filter(c=>!c.checked).map(c=>c.value).join(',')||null});if(r.error)throw r.error;
+  let iu=f.intro_url.value||null;const vf=f.intro_file.files[0];
+  if(vf){if(!/mp4/i.test(vf.type)&&!/\.mp4$/i.test(vf.name))throw new Error('শুধু MP4 ভিডিও দিন');if(vf.size>10485760)throw new Error('ভিডিও ১০ MB-এর বেশি। ছোট করে দিন।');const p='intro/'+Date.now()+'.mp4',up=await sb.storage.from('media').upload(p,vf,{contentType:'video/mp4'});if(up.error)throw up.error;iu=sb.storage.from('media').getPublicUrl(p).data.publicUrl}
+  if(f.intro_reset&&f.intro_reset.checked)iu=null;
+  const r=await sb.from('site_settings').upsert({id:1,site_name:f.site_name.value.trim(),slogan:f.slogan.value.trim()||null,logo_url:u,contacts:f.contacts.value.trim()||null,hidden_pages:[...f.querySelectorAll('input[name=show]')].filter(c=>!c.checked).map(c=>c.value).join(',')||null,intro_url:iu,intro_off:!f.intro_on.checked});if(r.error)throw r.error;
   A.msg='সংরক্ষণ হয়েছে।'}catch(x){A.msg='সংরক্ষণ করা যায়নি: '+(x.message||x)}
  await loadSite();await adminRender();window.scrollTo(0,0)}
 async function adminInvite(e){e.preventDefault();const f=e.target,em=f.email.value.trim().toLowerCase();A.msg='';
@@ -502,7 +511,7 @@ async function adminRender(){const el=$('#adm');if(!el)return;
   +'<h3>বর্তমান প্রশাসক</h3>'+pr.data.map(x=>`<div class="card" style="margin-bottom:10px"><b>${esc(x.full_name||'')}</b> ${esc(x.email||'')}<br>${sa&&x.id!==A.user.id?`<select onchange="adminRole('${x.id}',this.value)">${ro(x.role)}</select> <button class="btn o" style="min-height:40px" onclick="adminRemove('${x.id}')">সরিয়ে দিন</button>`:ROLE[x.role]}</div>`).join('');return}
  if(A.tab==='site'){const r=await sb.from('site_settings').select('*').eq('id',1).maybeSingle();
   if(r.error){el.innerHTML=h+'<p>সেটিংস টেবিল পাওয়া যায়নি। আগে SQL চালান।</p>';return}const d=r.data||{};
-  el.innerHTML=h+`<form class="fm card" onsubmit="adminSaveSite(event)"><h3>সাইট সেটিংস</h3><label>সাইটের নাম<input name="site_name" value="${esc(d.site_name||SITE.name)}" required></label><label>স্লোগান<input name="slogan" value="${esc(d.slogan||SITE.slogan)}"></label><label>যোগাযোগ (প্রতি লাইনে একটি: নাম | তথ্য)<textarea name="contacts" placeholder="ফোন | ০১XXXXXXXXX&#10;ইমেইল | name@example.com&#10;ঠিকানা | ...">${esc(d.contacts||'')}</textarea></label><p>লাইন যোগ করলে যোগ হবে, লাইন মুছলে মুছে যাবে। সব মুছলে সাইট থেকে যোগাযোগ অংশ লুকিয়ে যাবে।</p><p><b>সাইটে যে পাতা ব্যবহারকারীরা দেখবেন</b><br>টিক তুলে দিলে পাতাটি সবার কাছ থেকে লুকিয়ে যাবে। আবার টিক দিলে ফিরে আসবে।</p>${PAGES.slice(1).map(p=>`<label style="display:flex;gap:12px;align-items:center;margin:6px 0"><input type="checkbox" name="show" value="${p[0]}" style="width:26px;min-height:26px"${(d.hidden_pages||'').split(',').includes(p[0])?'':' checked'}> ${p[1]}</label>`).join('')}<label>নতুন লোগো (চৌকো JPG, PNG বা WEBP)<input type="file" name="logo_file" accept="image/jpeg,image/png,image/webp"></label><input type="hidden" name="logo_url" value="${esc(d.logo_url||'')}"><p>বর্তমান লোগো:</p><img src="${esc(su(d.logo_url)||IMG.logo)}" alt="" style="width:96px;border-radius:16px"><div class="bar2"><button class="btn">সংরক্ষণ</button></div></form>`;return}
+  el.innerHTML=h+`<form class="fm card" onsubmit="adminSaveSite(event)"><h3>সাইট সেটিংস</h3><label>সাইটের নাম<input name="site_name" value="${esc(d.site_name||SITE.name)}" required></label><label>স্লোগান<input name="slogan" value="${esc(d.slogan||SITE.slogan)}"></label><label>যোগাযোগ (প্রতি লাইনে একটি: নাম | তথ্য)<textarea name="contacts" placeholder="ফোন | ০১XXXXXXXXX&#10;ইমেইল | name@example.com&#10;ঠিকানা | ...">${esc(d.contacts||'')}</textarea></label><p>লাইন যোগ করলে যোগ হবে, লাইন মুছলে মুছে যাবে। সব মুছলে সাইট থেকে যোগাযোগ অংশ লুকিয়ে যাবে।</p><p><b>সাইটে যে পাতা ব্যবহারকারীরা দেখবেন</b><br>টিক তুলে দিলে পাতাটি সবার কাছ থেকে লুকিয়ে যাবে। আবার টিক দিলে ফিরে আসবে।</p>${PAGES.slice(1).map(p=>`<label style="display:flex;gap:12px;align-items:center;margin:6px 0"><input type="checkbox" name="show" value="${p[0]}" style="width:26px;min-height:26px"${(d.hidden_pages||'').split(',').includes(p[0])?'':' checked'}> ${p[1]}</label>`).join('')}<p><b>শুরুর এনিমেশন ভিডিও</b><br>সাইটে ঢোকার আগে যে ভিডিও চলে। MP4 ফাইল দিন, সর্বোচ্চ ১০ MB (২–৫ MB হলে দ্রুত চলে)।</p><label style="display:flex;gap:12px;align-items:center"><input type="checkbox" name="intro_on" style="width:26px;min-height:26px"${d.intro_off?'':' checked'}> শুরুর এনিমেশন চালু থাকবে</label><label>নতুন ভিডিও (MP4)<input type="file" name="intro_file" accept="video/mp4"></label><input type="hidden" name="intro_url" value="${esc(d.intro_url||'')}"><p>${d.intro_url?'বর্তমানে আপনার দেওয়া ভিডিও চলছে।':'বর্তমানে সাধারণ (ডিফল্ট) ভিডিও চলছে।'}</p>${d.intro_url?'<label style="display:flex;gap:12px;align-items:center"><input type="checkbox" name="intro_reset" style="width:26px;min-height:26px"> সাধারণ ভিডিওতে ফিরে যান</label>':''}<video src="${esc(su(d.intro_url)||'intro.mp4')}" controls playsinline muted preload="metadata" style="width:100%;max-width:240px;border-radius:12px;margin:8px 0"></video><label>নতুন লোগো (চৌকো JPG, PNG বা WEBP)<input type="file" name="logo_file" accept="image/jpeg,image/png,image/webp"></label><input type="hidden" name="logo_url" value="${esc(d.logo_url||'')}"><p>বর্তমান লোগো:</p><img src="${esc(su(d.logo_url)||IMG.logo)}" alt="" style="width:96px;border-radius:16px"><div class="bar2"><button class="btn">সংরক্ষণ</button></div></form>`;return}
  if(A.edit!==undefined){el.innerHTML=h+formHtml(A.edit);if(A.tab==='committee')geoUpd(true);return}
  const t=T[A.tab],r=await sb.from(t.tb).select(A.tab==='committee'?'*,committee_members(*)':'*').order('created_at',{ascending:false});
  if(r.error){el.innerHTML=h+'<p>তথ্য আনা যায়নি: '+esc(r.error.message)+'</p>';return}
