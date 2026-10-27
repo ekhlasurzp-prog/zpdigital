@@ -148,6 +148,12 @@ details.cmd>summary .cnt{font-size:13px;color:var(--mut);white-space:nowrap}
 details.cmd>summary:after{content:"▾";font-size:20px;color:var(--lc,#e9d27a);transition:transform .2s}
 details.cmd[open]>summary:after{transform:rotate(180deg)}
 details.cmd[open]>summary{margin-bottom:8px}
+a.cml{display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;min-height:56px;margin-bottom:12px}
+a.cml h3{margin:0;flex:1}a.cml .cnt{font-size:13px;color:var(--mut);white-space:nowrap}
+a.cml:after{content:"›";font-size:30px;line-height:1;color:var(--lc,#e9d27a)}
+.cma{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px}.cma h3{margin:0 0 4px}.cma .cnt{font-size:13px;color:var(--mut)}
+.chips button[class^=lc-]{display:flex;align-items:center;justify-content:center;min-height:48px;padding:6px 10px;border:2px solid var(--c);color:var(--c);background:transparent;font:inherit;font-weight:700;border-radius:12px;cursor:pointer}
+.chips button[class^=lc-][aria-pressed=true]{background:var(--c);color:#10210f}
 </style>
 </head>
 <body>
@@ -296,8 +302,7 @@ function committeesPage0(p){
  const dvNote=x=>'';
  const rows=f=>ORGS.map(o=>{const it=D.committee.filter(c=>c.org===o&&f(c));
   if(!it.length)return `<div class="card dim" style="margin-bottom:12px"><h3>${esc(o)}</h3><p style="margin:0;color:var(--mut)">এখনো যোগ করা হয়নি।</p></div>`;
-  const n=it.reduce((t,c)=>t+(c.mem?c.mem.length:0),0);
-  return `<details class="card cmd" style="margin-bottom:12px"><summary><h3>${esc(o)}</h3><span class="cnt">${n?n.toLocaleString('bn-BD')+' জন সদস্য':'খুলুন'}</span></summary>${it.map(c=>`<div class="cmi"><h4 class="cn">${esc(c.t)}</h4>${memHtml(c.mem)}${c.full?md(c.full):''}</div>`).join('')}</details>`}).join('');
+  return it.map(c=>{const n=c.mem?c.mem.length:0;return `<a class="card cml" href="#/view/committee/${c.id}"><h3>${esc(it.length>1?o+' — '+c.t:o)}</h3><span class="cnt">${n?n.toLocaleString('bn-BD')+' জন সদস্য':'বিস্তারিত'}</span></a>`}).join('')}).join('');
  const grid=(arr,h)=>`<input class="fi" placeholder="নাম দিয়ে খুঁজুন" aria-label="খুঁজুন" oninput="const v=this.value.trim();document.querySelectorAll('.dl a').forEach(e=>e.style.display=e.textContent.includes(v)?'':'none')"><div class="dl">${arr.map(x=>`<a href="${h(x)}">${esc(x)}</a>`).join('')}</div>`;
  if(!T4.some(x=>x[0]===t))return head('কমিটি',pre+`<div class="grid">${T4.map(x=>`<a class="card qa lt-${x[0]}" href="${L(x[0])}"><b>${x[1]}</b><span>${x[2]}</span></a>`).join('')}</div>`)+end;
  const ttl=T4.find(x=>x[0]===t)[1];
@@ -325,6 +330,36 @@ const normMem=a=>(Array.isArray(a)?a:[]).map(x=>({no:String((x&&x.no)??''),name:
 const memHtml=m=>m&&m.length?`<div class="tw mt"><table><tr><th>ক্রম</th><th>নাম</th><th>পদবী</th></tr>${m.map(x=>`<tr><td>${esc(x.no)}</td><td>${esc(x.name)}</td><td>${esc(x.pos)}</td></tr>`).join('')}</table></div>`:'';
 const memRow=x=>`<div class="mrow"><input class="mn" placeholder="ক্রম" inputmode="numeric" value="${esc(x.no)}"><input class="mm" placeholder="নাম" value="${esc(x.name)}"><button type="button" class="mx" aria-label="সরান" onclick="this.parentNode.remove()">×</button><input class="mp" placeholder="পদবী" value="${esc(x.pos)}"></div>`;
 function memAdd(){const c=document.querySelector('#mrows');if(!c)return;c.insertAdjacentHTML('beforeend',memRow({no:(c.children.length+1).toLocaleString('bn-BD'),name:'',pos:''}))}
+const CK={'কেন্দ্রীয় কমিটি':'central','বিভাগীয় কমিটি':'division','জেলা কমিটি':'district','মহানগর কমিটি':'metro','উপজেলা কমিটি':'upazila'};
+function cmBack(x){const k=CK[x.lv]||'central',e=encodeURIComponent;return '#/committees/'+k+(k==='division'&&x.div?'/'+e(x.div):k==='district'&&x.dist?'/'+e(x.dist):k==='metro'&&x.metro?'/'+e(x.metro):k==='upazila'&&x.dist&&x.upz?'/'+e(x.dist)+'/'+e(x.upz):'')}
+function cmDetail(x){const k=CK[x.lv]||'central';return `<div class="lt lt-${k}"><section class="s dt"><div class="wrap"><p><a href="${cmBack(x)}">← কমিটির তালিকায় ফিরে যান</a></p><h2>${esc(x.t)}</h2><p class="sub">${esc(x.s)}</p>${memHtml(x.mem)||'<p>সদস্য তালিকা এখনো যোগ করা হয়নি।</p>'}${x.full?md(x.full):''}</div></section></div>`}
+const CA={lv:'',div:'',d:'',a:''};
+const cmaSame=c=>c.level===CA.lv&&(c.division||'')===(CA.lv==='বিভাগীয় কমিটি'?CA.div:'')&&(c.district||'')===((CA.lv==='জেলা কমিটি'||CA.lv==='উপজেলা কমিটি')?CA.d:'')&&(c.metro||'')===(CA.lv==='মহানগর কমিটি'?CA.a:'')&&(c.upazila||'')===(CA.lv==='উপজেলা কমিটি'?CA.a:'');
+function cmaLv(i){CA.lv=LEVELS[i];CA.div='';CA.d='';CA.a='';adminRender()}
+function cmaDiv(i){CA.div=DIVS[i].n;CA.d='';CA.a='';adminRender()}
+function cmaDist(i){const v=DIVS.find(x=>x.n===CA.div);CA.d=v.d[i];CA.a='';adminRender()}
+function cmaArea(i){CA.a=CA.lv==='মহানগর কমিটি'?METROS[i]:UPA(CA.d)[i];adminRender()}
+function cmaBack(){const lv=CA.lv;if(lv==='উপজেলা কমিটি'&&CA.a)CA.a='';else if((lv==='জেলা কমিটি'||lv==='উপজেলা কমিটি')&&CA.d)CA.d='';else if(lv==='মহানগর কমিটি')CA.a='';else CA.div='';adminRender()}
+function cmaOrg(i){const o=ORGS[i],r=A.rows.find(c=>cmaSame(c)&&c.org_group===o),lv=CA.lv;
+ A.edit=r||{level:lv,division:lv==='বিভাগীয় কমিটি'?CA.div:null,district:(lv==='জেলা কমিটি'||lv==='উপজেলা কমিটি')?CA.d:null,metro:lv==='মহানগর কমিটি'?CA.a:null,upazila:lv==='উপজেলা কমিটি'?CA.a:null,org_group:o,status:A.role==='contributor'?'draft':'published'};A.msg='';adminRender()}
+function cmAdmin(rows){const lv=CA.lv,k=CK[lv]||'';
+ const cnt=f=>rows.filter(f).length,nb=x=>x?` <small>(${x.toLocaleString('bn-BD')})</small>`:'';
+ const pick=(t,list,fn,cf)=>`<h3 class="lv">${t}</h3><div class="chips">`+list.map((x,i)=>`<button type="button" class="chip" onclick="${fn}(${i})">${esc(x)}${nb(cf(x))}</button>`).join('')+'</div>';
+ const back='<p><button type="button" class="btn o" style="min-height:40px" onclick="cmaBack()">← ফিরে যান</button></p>';
+ const place=[lv,CA.div&&lv==='বিভাগীয় কমিটি'?CA.div:'',(lv==='জেলা কমিটি'||lv==='উপজেলা কমিটি')?CA.d:'',CA.a].filter(Boolean).join(' › ');
+ const orgs=()=>back+`<h3 class="lv">${esc(place)}</h3><p>যে সংগঠনের কমিটি লিখতে চান তার পাশের বাটনে চাপুন।</p>`+ORGS.map((o,i)=>{const r=rows.find(c=>cmaSame(c)&&c.org_group===o),m=r?normMem(r.members).length:0;
+  return `<div class="card cma"><div style="flex:1"><h3>${esc(o)}</h3><span class="cnt">${r?(m?m.toLocaleString('bn-BD')+' জন সদস্য':'সদস্য যোগ হয়নি')+' • '+STL[r.status]:'এখনো যোগ করা হয়নি'}</span></div><button type="button" class="btn${r?' o':''}" style="min-height:42px" onclick="cmaOrg(${i})">${r?'সম্পাদনা':'+ লিখুন'}</button>${r&&A.role==='super_admin'?`<button type="button" class="btn o" style="min-height:42px" onclick="adminDel('${r.id}')">মুছুন</button>`:''}</div>`}).join('');
+ let h=`<div class="lt lt-${k}"><div class="bar2"><button type="button" class="btn o" style="min-height:40px" onclick="A.cmList=true;adminRender()">সব কমিটি তালিকায় দেখুন</button></div><div class="chips">${LEVELS.map((l,i)=>`<button type="button" class="lc-${CK[l]}" aria-pressed="${l===lv}" onclick="cmaLv(${i})">${l}</button>`).join('')}</div>`;
+ const dvOf=x=>DIVS.find(d=>d.n===x);
+ if(!lv)h+='<p>উপরের একটি অপশন বেছে নিন, তারপর ধাপে ধাপে এগিয়ে কমিটি লিখুন।</p>';
+ else if(lv==='কেন্দ্রীয় কমিটি')h+=`<h3 class="lv">কেন্দ্রীয় কমিটি</h3><p>যে সংগঠনের কমিটি লিখতে চান তার পাশের বাটনে চাপুন।</p>`+ORGS.map((o,i)=>{const r=rows.find(c=>cmaSame(c)&&c.org_group===o),m=r?normMem(r.members).length:0;return `<div class="card cma"><div style="flex:1"><h3>${esc(o)}</h3><span class="cnt">${r?(m?m.toLocaleString('bn-BD')+' জন সদস্য':'সদস্য যোগ হয়নি')+' • '+STL[r.status]:'এখনো যোগ করা হয়নি'}</span></div><button type="button" class="btn${r?' o':''}" style="min-height:42px" onclick="cmaOrg(${i})">${r?'সম্পাদনা':'+ লিখুন'}</button>${r&&A.role==='super_admin'?`<button type="button" class="btn o" style="min-height:42px" onclick="adminDel('${r.id}')">মুছুন</button>`:''}</div>`}).join('');
+ else if(lv==='বিভাগীয় কমিটি')h+=!CA.div?pick('বিভাগ বাছুন',DIVS.map(x=>x.n),'cmaDiv',x=>cnt(c=>c.level===lv&&c.division===x)):orgs();
+ else if(lv==='মহানগর কমিটি')h+=!CA.a?pick('মহানগর বাছুন',METROS,'cmaArea',x=>cnt(c=>c.level===lv&&c.metro===x)):orgs();
+ else if(!CA.div)h+=pick('বিভাগ বাছুন',DIVS.map(x=>x.n),'cmaDiv',x=>cnt(c=>c.level===lv&&dvOf(x).d.includes(c.district)));
+ else if(!CA.d)h+=back+pick(esc(CA.div)+'-এর জেলা বাছুন',dvOf(CA.div).d,'cmaDist',x=>cnt(c=>c.level===lv&&c.district===x));
+ else if(lv==='জেলা কমিটি')h+=orgs();
+ else h+=!CA.a?back+pick(esc(CA.d)+' জেলার উপজেলা বাছুন',UPA(CA.d),'cmaArea',x=>cnt(c=>c.level===lv&&c.district===CA.d&&c.upazila===x)):orgs();
+ return h+'</div>'}
 const yid=u=>{const m=/(?:youtu\.be\/|youtube\.com\/(?:live\/|embed\/|shorts\/)|[?&]v=)([A-Za-z0-9_-]{11})/.exec(u||'');return m?m[1]:''};
 const fdd=v=>v?new Date(v).toLocaleDateString('bn-BD',{dateStyle:'medium'}):'';
 function mapRow(k,r){const m={k,real:1,id:r.id,s:'',full:''};
@@ -345,6 +380,7 @@ function md(s){let e=esc(s||'').replace(/\s+###\s+/g,'\n### ').replace(/\s-\s(?=
  return o+(ul?'</ul>':'')}
 function detail(k,id){const x=(D[k]||[]).find(y=>y.id===id);
  if(!x)return `<section class="s"><div class="wrap"><p>${LIVE?'এই পাতাটি পাওয়া যায়নি।':'লোড হচ্ছে…'}</p><p><a class="btn o" href="#${LINK[k]||'/'}">ফিরে যান</a></p></div></section>`;
+ if(k==='committee')return cmDetail(x);
  const y=k==='video'?yid(x.u):'';
  return `<section class="s dt"><div class="wrap"><p><a href="#${LINK[k]}">← ফিরে যান</a></p><h2>${esc(x.t)}</h2>${x.s?`<p class="sub">${esc(x.s)}</p>`:''}${y?`<iframe src="https://www.youtube-nocookie.com/embed/${y}" title="${esc(x.t)}" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`:x.img?`<img class="dimg" src="${esc(x.img)}" alt="${esc(x.t)}">`:''}${md(x.full)}${x.u?`<p><a class="btn" href="${esc(x.u)}" target="_blank" rel="noopener">${k==='video'?'ইউটিউবে খুলুন':'PDF পড়ুন'}</a></p>`:''}</div></section>`}
 async function loadAll(){if(!sb)return;try{
@@ -474,7 +510,7 @@ async function adminLogin(e){e.preventDefault();const f=e.target;A.msg='';const 
  if(r.error)A.msg='লগইন ব্যর্থ। ইমেইল ও পাসওয়ার্ড দেখুন।';else await loadRole(r.data.user);adminRender()}
 async function adminOut(){await sb.auth.signOut();A.user=null;A.role=null;A.edit=undefined;adminRender()}
 function formHtml(r){const t=T[A.tab],isC=A.role==='contributor',sts=isC?['draft','pending']:['draft','pending','published','archived'];
- let h=`<form class="fm card" data-u="${esc((r&&r.upazila)||'')}" onsubmit="adminSave(event)"><h3>${r?'সম্পাদনা':'নতুন'}: ${t.l}</h3>`;
+ let h=`<form class="fm card" data-u="${esc((r&&r.upazila)||'')}" onsubmit="adminSave(event)"><h3>${r&&r.id?'সম্পাদনা':'নতুন'}: ${t.l}</h3>${A.tab==='committee'&&r&&r.level?'<p class="note">'+esc([r.org_group,r.level,r.division,r.district,r.metro,r.upazila].filter(Boolean).join(' › '))+'</p>':''}`;
  for(const [n,l,ty] of t.f){const v=r?(r[n]??''):'';
   if(ty==='ta')h+=`<label>${l}<textarea name="${n}">${esc(v)}</textarea></label>`;
   else if(ty==='members'){const m=((r&&r.committee_members)||[]).slice().sort((a,b)=>a.sort_order-b.sort_order).map(x=>x.name+' | '+(x.role_title||'')).join('\n');h+=`<label>${l}<textarea name="members">${esc(m)}</textarea></label>`}
@@ -485,7 +521,7 @@ function formHtml(r){const t=T[A.tab],isC=A.role==='contributor',sts=isC?['draft
   else{let val=v;if(ty==='datetime-local'&&v){const d=new Date(v);val=new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,16)}
    h+=`<label>${l}<input name="${n}" type="${ty||'text'}" value="${esc(val)}"></label>`}}
  h+=`<label>অবস্থা<select name="status">${sts.map(s=>`<option value="${s}"${r&&r.status===s?' selected':''}>${STL[s]}</option>`).join('')}</select></label>${isC?'<p>অবদানকারী শুধু খসড়া বা অনুমোদনের জন্য জমা দিতে পারেন।</p>':''}<div class="bar2"><button class="btn">সংরক্ষণ</button><button type="button" class="btn o" onclick="A.edit=undefined;adminRender()">বাতিল</button></div></form>`;
- if(r&&A.tab!=='org')h+='<h3>প্রিভিউ</h3>'+'<div style="pointer-events:none">'+card(mapRow(A.tab,r),0)+'</div>';return h}
+ if(r&&r.id&&A.tab!=='org')h+='<h3>প্রিভিউ</h3>'+'<div style="pointer-events:none">'+card(mapRow(A.tab,r),0)+'</div>';return h}
 function shrink(f){return new Promise(r=>{const i=new Image(),u=URL.createObjectURL(f);i.onload=()=>{const k=Math.min(1,1400/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>r(b),'image/jpeg',0.85)};i.onerror=()=>{URL.revokeObjectURL(u);r(null)};i.src=u})}
 async function adminSave(e){e.preventDefault();const f=e.target,t=T[A.tab],o={};A.msg='';const bt=f.querySelector('button.btn');if(bt){bt.disabled=true;bt.textContent='সংরক্ষণ হচ্ছে… অপেক্ষা করুন'}
  try{for(const [n,l,ty] of t.f){if(ty==='members')continue;if(ty==='mem'){o.members=[...f.querySelectorAll('.mrow')].map(w=>({no:w.querySelector('.mn').value.trim(),name:w.querySelector('.mm').value.trim(),pos:w.querySelector('.mp').value.trim()})).filter(x=>x.name||x.pos);continue}let v=f[n].value;if(v===PICK)v='';
@@ -548,7 +584,7 @@ async function adminRender(){const el=$('#adm');if(!el)return;
  if(A.edit!==undefined){el.innerHTML=h+formHtml(A.edit);if(A.tab==='committee')geoUpd(true);return}
  const t=T[A.tab],r=await sb.from(t.tb).select(A.tab==='committee'?'*,committee_members(*)':'*').order('created_at',{ascending:false});
  if(r.error){el.innerHTML=h+'<p>তথ্য আনা যায়নি: '+esc(r.error.message)+'</p>';return}
- A.rows=r.data;h+=`<div class="bar2"><button class="btn" onclick="A.edit=null;A.msg='';adminRender()">+ নতুন যোগ করুন</button></div>`;
+ A.rows=r.data;if(A.tab==='committee'&&!A.cmList){el.innerHTML=h+cmAdmin(r.data);return}h+=`<div class="bar2"><button class="btn" onclick="A.edit=null;A.msg='';adminRender()">+ নতুন যোগ করুন</button>${A.tab==='committee'?'<button class="btn o" onclick="A.cmList=false;adminRender()">অপশন ধরে লিখুন</button>':''}</div>`;
  h+=r.data.length?r.data.map(x=>`<div class="card" style="margin-bottom:12px"><span class="tag">${STL[x.status]}</span><h3>${esc(x[t.n])}</h3>${x.level?`<p>${esc((x.org_group||'')+' • '+x.level+(x.district?' • '+x.district:'')+(x.metro?' • '+x.metro:'')+(x.upazila?' • '+x.upazila:''))}</p>`:''}<div class="bar2"><button class="btn o" onclick="adminEdit('${x.id}')">সম্পাদনা</button>${A.role==='super_admin'?`<button class="btn o" onclick="adminDel('${x.id}')">মুছুন</button>`:''}</div></div>`).join(''):'<div class="empty">এখনো কিছু যোগ হয়নি।</div>';
  el.innerHTML=h}
 function buildNav(){const P=PAGES.filter(p=>p[0]==='/'||!hid(p[0])).flatMap(p=>p[0]==='/committees'?[p,['/committees/division','বিভাগীয় কমিটি']]:[p]);$('#navl').innerHTML=P.map(p=>`<li><a href="#${p[0]}">${p[1]}</a></li>`).join('');$('#fl').innerHTML=P.filter(p=>p[0]!=='/').map(p=>`<a href="#${p[0]}">${p[1]}</a>`).join('')}buildNav();
