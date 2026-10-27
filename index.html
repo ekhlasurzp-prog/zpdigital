@@ -141,6 +141,13 @@ details.og{border:1px solid var(--line);border-radius:12px;margin:0 0 12px;backg
 .lt table th{background:rgba(255,255,255,.08);color:var(--lc)}.lt table td,.lt table th{border-color:var(--lc)}
 .mt{margin:6px 0 12px}
 .mrow{display:grid;grid-template-columns:72px 1fr 44px;gap:6px;margin:8px 0}.mrow .mp{grid-column:1/4}.mrow .mx{background:transparent;border:1px solid var(--line);color:#fff;border-radius:10px;font-size:22px;cursor:pointer}.memf{margin:12px 0}
+details.cmd>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;list-style:none;min-height:48px}
+details.cmd>summary::-webkit-details-marker{display:none}
+details.cmd>summary h3{margin:0;flex:1}
+details.cmd>summary .cnt{font-size:13px;color:var(--mut);white-space:nowrap}
+details.cmd>summary:after{content:"▾";font-size:20px;color:var(--lc,#e9d27a);transition:transform .2s}
+details.cmd[open]>summary:after{transform:rotate(180deg)}
+details.cmd[open]>summary{margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -288,7 +295,9 @@ function committeesPage0(p){
  const dvGrid=k=>`<div class="grid">${DIVS.map(x=>`<a class="card qa" href="${L(k,x.n)}"><b>${esc(x.n)}</b><span>${x.d.length.toLocaleString('bn-BD')}টি জেলা</span></a>`).join('')}</div>`;
  const dvNote=x=>'';
  const rows=f=>ORGS.map(o=>{const it=D.committee.filter(c=>c.org===o&&f(c));
-  return `<div class="card" style="margin-bottom:12px"><h3>${esc(o)}</h3>${it.length?it.map(c=>`<div class="cmi"><h4 class="cn">${esc(c.t)}</h4>${memHtml(c.mem)}${c.full?md(c.full):''}</div>`).join(''):'<p style="margin:0;color:var(--mut)">এখনো যোগ করা হয়নি।</p>'}</div>`}).join('');
+  if(!it.length)return `<div class="card dim" style="margin-bottom:12px"><h3>${esc(o)}</h3><p style="margin:0;color:var(--mut)">এখনো যোগ করা হয়নি।</p></div>`;
+  const n=it.reduce((t,c)=>t+(c.mem?c.mem.length:0),0);
+  return `<details class="card cmd" style="margin-bottom:12px"><summary><h3>${esc(o)}</h3><span class="cnt">${n?n.toLocaleString('bn-BD')+' জন সদস্য':'খুলুন'}</span></summary>${it.map(c=>`<div class="cmi"><h4 class="cn">${esc(c.t)}</h4>${memHtml(c.mem)}${c.full?md(c.full):''}</div>`).join('')}</details>`}).join('');
  const grid=(arr,h)=>`<input class="fi" placeholder="নাম দিয়ে খুঁজুন" aria-label="খুঁজুন" oninput="const v=this.value.trim();document.querySelectorAll('.dl a').forEach(e=>e.style.display=e.textContent.includes(v)?'':'none')"><div class="dl">${arr.map(x=>`<a href="${h(x)}">${esc(x)}</a>`).join('')}</div>`;
  if(!T4.some(x=>x[0]===t))return head('কমিটি',pre+`<div class="grid">${T4.map(x=>`<a class="card qa lt-${x[0]}" href="${L(x[0])}"><b>${x[1]}</b><span>${x[2]}</span></a>`).join('')}</div>`)+end;
  const ttl=T4.find(x=>x[0]===t)[1];
