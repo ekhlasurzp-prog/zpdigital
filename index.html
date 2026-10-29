@@ -372,9 +372,9 @@ function romanOf(n){const m=[[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'
 const GATE={w:''};
 function gateNew(){let n;try{const a=new Uint32Array(1);crypto.getRandomValues(a);n=a[0]%1001}catch(e){n=Math.floor(Math.random()*1001)}GATE.w=numWords(n)}
 function gateShow(msg,keep){const el=$('#adm');if(!el)return;if(!keep||!GATE.w)gateNew();
- el.innerHTML=`<h2>প্রশাসক প্রবেশ</h2>${msg?`<div class="note">${esc(msg)}</div>`:''}<div class="fm card" style="max-width:460px"><h3>নিরাপত্তা যাচাই</h3><p>নিচের ইংরেজি লেখাটি দেখুন:</p><div class="gw">${esc(GATE.w)}</div><p>এই লেখায় মোট কয়টি ইংরেজি অক্ষর (a–z) আছে? ফাঁকা জায়গা গুনবেন না। গুনে <b>রোমান সংখ্যায়</b> লিখুন। যেমন: ৬ হলে VI, ১২ হলে XII। (I=১, V=৫, X=১০, L=৫০)</p><label>আপনার উত্তর<input id="gin" autocomplete="off" autocapitalize="characters" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();gateGo()}"></label><div class="bar2"><button type="button" class="btn" onclick="gateGo()">জমা দিন</button><button type="button" class="btn o" onclick="gateShow('')">নতুন সংখ্যা</button></div></div>`}
-function gateGo(){const v=(($('#gin')||{}).value||'').trim().toUpperCase().replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c)).replace(/\s+/g,''),n=GATE.w.replace(/[^a-z]/g,'').length;
- if(v&&(v===romanOf(n)||v===String(n))){sessionStorage.setItem('zpgate','1');GATE.w='';adminInit()}else gateShow('উত্তর ঠিক হয়নি। নতুন সংখ্যা দেওয়া হলো, আবার চেষ্টা করুন।')}
+ el.innerHTML=`<h2>প্রশাসক প্রবেশ</h2>${msg?`<div class="note">${esc(msg)}</div>`:''}<div class="fm card" style="max-width:460px"><div class="gw">${esc(GATE.w)}</div><input id="gin" aria-label="উত্তর" autocomplete="off" autocapitalize="characters" spellcheck="false" style="margin-top:6px" onkeydown="if(event.key==='Enter'){event.preventDefault();gateGo()}"><div class="bar2"><button type="button" class="btn" onclick="gateGo()">জমা দিন</button><button type="button" class="btn o" onclick="gateShow('')">নতুন সংখ্যা</button></div></div>`}
+function gateGo(){const v=(($('#gin')||{}).value||'').trim().toUpperCase().replace(/\s+/g,''),n=GATE.w.replace(/[^a-z]/g,'').length;
+ if(v&&v===romanOf(n)){sessionStorage.setItem('zpgate','1');GATE.w='';adminInit()}else gateShow('উত্তর ঠিক হয়নি।')}
 const yid=u=>{const m=/(?:youtu\.be\/|youtube\.com\/(?:live\/|embed\/|shorts\/)|[?&]v=)([A-Za-z0-9_-]{11})/.exec(u||'');return m?m[1]:''};
 const fdd=v=>v?new Date(v).toLocaleDateString('bn-BD',{dateStyle:'medium'}):'';
 function mapRow(k,r){const m={k,real:1,id:r.id,s:'',full:''};
