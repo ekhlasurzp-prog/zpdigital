@@ -302,10 +302,18 @@ function committeesPage0(p){
  const dvGrid=k=>`<div class="grid">${DIVS.map(x=>`<a class="card qa" href="${L(k,x.n)}"><b>${esc(x.n)}</b><span>${x.d.length.toLocaleString('bn-BD')}টি জেলা</span></a>`).join('')}</div>`;
  const dvNote=x=>'';
  const unitSec=a=>{let h='';for(const u of ['',...UNITS]){const f=c=>c.lv==='জেলা কমিটি'&&c.dist===a&&(c.unit||'')===u;if(u&&!D.committee.some(f))continue;h+=`<h3 class="lv">${esc(unitName(a,u))}</h3>`+rows(f,!!u)}return h};
- const rows=(f,only)=>ORGS.map(o=>{const it=D.committee.filter(c=>c.org===o&&f(c));
+ const rows=(f,only)=>ORGS.map((o,i)=>{const it=D.committee.filter(c=>c.org===o&&f(c));
   if(!it.length)return only?'':`<div class="card dim" style="margin-bottom:12px"><h3>${esc(o)}</h3><p style="margin:0;color:var(--mut)">এখনো যোগ করা হয়নি।</p></div>`;
-  return it.map(c=>{const n=c.mem?c.mem.length:0;return `<a class="card cml" href="#/view/committee/${c.id}"><h3>${esc(it.length>1?o+' — '+c.t:o)}</h3><span class="cnt">${n?n.toLocaleString('bn-BD')+' জন সদস্য':'বিস্তারিত'}</span></a>`}).join('')}).join('');
+  const n=it.reduce((t,c)=>t+(c.mem?c.mem.length:0),0),href=it.length===1?'#/view/committee/'+it[0].id:'#/committees/org/'+i+'/'+seg.map(encodeURIComponent).join('/'),
+   cnt=it.length>1?it.length.toLocaleString('bn-BD')+'টি কমিটি':(n?n.toLocaleString('bn-BD')+' জন সদস্য':'বিস্তারিত');
+  return `<a class="card cml" href="${href}"><h3>${esc(o)}</h3><span class="cnt">${cnt}</span></a>`}).join('');
  const grid=(arr,h)=>`<input class="fi" placeholder="নাম দিয়ে খুঁজুন" aria-label="খুঁজুন" oninput="const v=this.value.trim();document.querySelectorAll('.dl a').forEach(e=>e.style.display=e.textContent.includes(v)?'':'none')"><div class="dl">${arr.map(x=>`<a href="${h(x)}">${esc(x)}</a>`).join('')}</div>`;
+ if(t==='org'){const o=ORGS[Number(a)],k=b,x=seg[3],y=seg[4];
+  const ff={central:c=>c.lv==='কেন্দ্রীয় কমিটি',division:c=>c.lv==='বিভাগীয় কমিটি'&&c.div===x,district:c=>c.lv==='জেলা কমিটি'&&c.dist===x,metro:c=>c.lv==='মহানগর কমিটি'&&c.metro===x,upazila:c=>c.lv==='উপজেলা কমিটি'&&c.dist===x&&c.upz===y}[k];
+  if(!o||!ff)return head('কমিটি',pre+'<p>পাতাটি পাওয়া যায়নি।</p>')+end;
+  const place={central:'কেন্দ্রীয় কমিটি',division:x+'ের কমিটি',district:x+' জেলার কমিটি',metro:x+'-এর কমিটি',upazila:x+' জেলার '+y+'-এর কমিটি'}[k];
+  const ord=c=>c.unit?1+UNITS.indexOf(c.unit):0,it=D.committee.filter(c=>c.org===o&&ff(c)).sort((p1,p2)=>ord(p1)-ord(p2));
+  return `<div class="lt lt-${k}">`+head(esc(o),pre+`<p><a href="${L(...[k,x,y].filter(Boolean))}">← ${esc(place)}</a></p>`+(it.length?it.map(c=>{const n=c.mem?c.mem.length:0;return `<a class="card cml" href="#/view/committee/${c.id}"><h3>${esc(k==='district'?unitName(x,c.unit):c.t)}</h3><span class="cnt">${n?n.toLocaleString('bn-BD')+' জন সদস্য':'বিস্তারিত'}</span></a>`}).join(''):'<div class="card dim"><p style="margin:0">এখনো যোগ করা হয়নি।</p></div>'))+end+'</div>'}
  if(!T4.some(x=>x[0]===t))return head('কমিটি',pre+`<div class="grid">${T4.map(x=>`<a class="card qa lt-${x[0]}" href="${L(x[0])}"><b>${x[1]}</b><span>${x[2]}</span></a>`).join('')}</div>`)+end;
  const ttl=T4.find(x=>x[0]===t)[1];
  if(t==='central')return head(ttl,pre+chips+rows(c=>c.lv==='কেন্দ্রীয় কমিটি'))+end;
@@ -316,7 +324,7 @@ function committeesPage0(p){
   if(!a)return head(ttl,pre+chips+dvGrid('district'))+end;
   const dvv=DIVS.find(x=>x.n===a);
   if(dvv)return head(esc(a),pre+chips+bc([ttl,L('district')],[a])+dvNote(dvv)+grid(dvv.d,d=>L('district',d)))+end;
-  return head(esc(a)+' জেলার সকল কমিটি',pre+chips+bc(...cr('district',a),[a])+unitSec(a)+`<p><a class="btn o" href="${L('upazila',a)}">${esc(a)} জেলার উপজেলা কমিটি দেখুন</a></p>`)+end}
+  return head(esc(a)+' জেলার সকল কমিটি',pre+chips+bc(...cr('district',a),[a])+rows(c=>c.lv==='জেলা কমিটি'&&c.dist===a)+`<p><a class="btn o" href="${L('upazila',a)}">${esc(a)} জেলার উপজেলা কমিটি দেখুন</a></p>`)+end}
  if(t==='metro'){
   if(!a)return head(ttl,pre+chips+grid(METROS,m=>L('metro',m)))+end;
   return head(esc(a)+'-এর সকল কমিটি',pre+chips+bc([ttl,L('metro')],[a])+rows(c=>c.lv==='মহানগর কমিটি'&&c.metro===a))+end}
