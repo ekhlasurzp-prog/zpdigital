@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ZP Digital — সত্য তরিকার প্রচারে ZP Digital।</title>
 <meta name="description" content="ZP Digital: বই, ভিডিও, ঘোষণা, ইভেন্ট ও সাংগঠনিক তথ্যের ডিজিটাল কেন্দ্র।">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a3d22">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ZP Digital">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -171,6 +178,7 @@ a.cml:after{content:"›";font-size:30px;line-height:1;color:var(--lc,#e9d27a)}
 <div><h4>পাতাসমূহ</h4><div id="fl"></div></div>
 <div id="fct"><h4>যোগাযোগ</h4><p style="margin:0">ঠিকানা: <i>[যাচাইকৃত ঠিকানা যোগ হবে]</i><br>ফোন: <i>[যাচাইকৃত নম্বর যোগ হবে]</i><br>ইমেইল: <i>[যাচাইকৃত ইমেইল যোগ হবে]</i></p></div>
 </div>
+<div id="inst" hidden style="margin-top:16px"><button type="button" class="btn" onclick="zpInstall()">📲 অ্যাপ হিসেবে ফোনে রাখুন</button></div><p id="ios" hidden style="margin:12px 0 0;font-size:14px;color:#cfe3d5">iPhone-এ অ্যাপ হিসেবে রাখতে: Safari-র শেয়ার বাটন চেপে "Add to Home Screen" বাছুন।</p>
 <div class="copy" id="fcp">© ZP Digital। এই সাইটে প্রদর্শিত নমুনা তথ্য যাচাইকৃত নয়।</div>
 </div></footer>
 <script>
@@ -615,6 +623,13 @@ function buildNav(){const P=PAGES.filter(p=>p[0]==='/'||!hid(p[0])).flatMap(p=>p
 
 $('#mb').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#mb').setAttribute('aria-expanded',o)};
 applySite();addEventListener('hashchange',route);addEventListener('hashchange',track);route();loadAll();track();intro();
+
+let DIP=null;
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();DIP=e;const b=document.querySelector('#inst');if(b)b.hidden=false});
+function zpInstall(){if(!DIP)return;DIP.prompt();DIP.userChoice.finally(()=>{DIP=null;const b=document.querySelector('#inst');if(b)b.hidden=true})}
+addEventListener('appinstalled',()=>{const b=document.querySelector('#inst');if(b)b.hidden=true});
+try{if(/iphone|ipad|ipod/i.test(navigator.userAgent||'')&&!matchMedia('(display-mode: standalone)').matches){const h=document.querySelector('#ios');if(h)h.hidden=false}}catch(e){}
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 </body>
 </html>
