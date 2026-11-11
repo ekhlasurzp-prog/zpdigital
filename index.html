@@ -162,6 +162,7 @@ a.cml:after{content:"›";font-size:30px;line-height:1;color:var(--lc,#e9d27a)}
 .chips button[class^=lc-]{display:flex;align-items:center;justify-content:center;min-height:48px;padding:6px 10px;border:2px solid var(--c);color:var(--c);background:transparent;font:inherit;font-weight:700;border-radius:12px;cursor:pointer}
 .chips button[class^=lc-][aria-pressed=true]{background:var(--c);color:#10210f}
 .gw{font:700 22px/1.4 monospace;letter-spacing:.5px;background:#0b1f15;border:2px dashed var(--gold);border-radius:12px;padding:14px;text-align:center;color:#fff;user-select:none;-webkit-user-select:none;margin:8px 0}
+#offbar{display:block;background:#8a6d00;color:#fff;text-align:center;padding:7px 12px;font-size:14px}#offbar[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -284,7 +285,7 @@ async function intro(){try{
  v.addEventListener('playing',()=>{ok=true;clearTimeout(tm);tm=setTimeout(close,16000)});
  v.addEventListener('ended',close);v.addEventListener('error',fail);
  tm=setTimeout(()=>{if(!ok)fail()},6000);
- v.src=SITE.introUrl||'intro.mp4';v.muted=false;
+ v.src=(SITE.introUrl&&navigator.onLine!==false)?SITE.introUrl:'intro.mp4';v.muted=false;
  const p=v.play();
  if(p&&p.catch)p.catch(()=>{v.muted=true;const q=v.play();if(q&&q.catch)q.catch(fail)});
 }catch(e){document.body.style.overflow=''}}
@@ -414,14 +415,24 @@ function detail(k,id){const x=(D[k]||[]).find(y=>y.id===id);
  if(k==='committee')return cmDetail(x);
  const y=k==='video'?yid(x.u):'';
  return `<section class="s dt"><div class="wrap"><p><a href="#${LINK[k]}">← ফিরে যান</a></p><h2>${esc(x.t)}</h2>${x.s?`<p class="sub">${esc(x.s)}</p>`:''}${y?`<iframe src="https://www.youtube-nocookie.com/embed/${y}" title="${esc(x.t)}" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`:x.img?`<img class="dimg" src="${esc(x.img)}" alt="${esc(x.t)}">`:''}${md(x.full)}${x.u?`<p><a class="btn" href="${esc(x.u)}" target="_blank" rel="noopener">${k==='video'?'ইউটিউবে খুলুন':'PDF পড়ুন'}</a></p>`:''}</div></section>`}
+const IDB={db:null,open(){return this.db||(this.db=new Promise((ok,no)=>{const r=indexedDB.open('zp',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}))},
+ async get(k){try{const d=await this.open();return await new Promise(ok=>{const q=d.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>ok(null)})}catch(e){return null}},
+ async set(k,v){try{const d=await this.open();await new Promise(ok=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=ok;t.onerror=ok})}catch(e){}}};
+let NETFAIL=false,CACHEDAT=0;
+function applyData(b,v,l,c,e,a,o){
+ D={book:b.map(r=>mapRow('book',r)),video:v.map(r=>mapRow('video',r)),leader:l.map(r=>mapRow('leader',r)),committee:c.map(r=>mapRow('committee',r)),event:e.map(r=>mapRow('event',r)),ann:a.map(r=>mapRow('ann',r))};
+ ORGP=o.map(r=>({id:r.id,t:r.title,full:r.body||''})).reverse();LIVE=true;note='';applySite()}
+function offBar(){let x=document.querySelector('#offbar');if(!x){x=document.createElement('div');x.id='offbar';x.hidden=true;document.querySelector('header').after(x)}
+ const off=navigator.onLine===false||NETFAIL;x.hidden=!(off&&LIVE);
+ if(!x.hidden)x.textContent='ইন্টারনেট নেই। আগে সংরক্ষিত তথ্য দেখানো হচ্ছে'+(CACHEDAT?' (শেষ আপডেট: '+new Date(CACHEDAT).toLocaleDateString('bn-BD',{day:'numeric',month:'long'})+')':'')+'।'}
+async function loadCache(){const x=await IDB.get('data');if(!x||LIVE||!x.raw)return;try{applyData(...x.raw);CACHEDAT=x.at||0;offBar();if(!location.hash.startsWith('#/admin'))route()}catch(e){}}
 async function loadAll(){if(!sb)return;try{
  const g=async(tb,o,sel='*')=>{const r=await sb.from(tb).select(sel).eq('status','published').order(o,{ascending:['sort_order','starts_at'].includes(o)});if(r.error)throw r.error;return r.data};
  await loadSite();
- const [b,v,l,c,e,a,o]=await Promise.all([g('books','published_at'),g('videos','published_at'),g('leaders','sort_order'),g('committees','published_at','*,committee_members(*)'),g('events','starts_at'),g('announcements','published_at'),g('org_pages','published_at')]);
- D={book:b.map(r=>mapRow('book',r)),video:v.map(r=>mapRow('video',r)),leader:l.map(r=>mapRow('leader',r)),committee:c.map(r=>mapRow('committee',r)),event:e.map(r=>mapRow('event',r)),ann:a.map(r=>mapRow('ann',r))};
- ORGP=o.map(r=>({id:r.id,t:r.title,full:r.body||''})).reverse();LIVE=true;note='';applySite();
+ const raw=await Promise.all([g('books','published_at'),g('videos','published_at'),g('leaders','sort_order'),g('committees','published_at','*,committee_members(*)'),g('events','starts_at'),g('announcements','published_at'),g('org_pages','published_at')]);
+ NETFAIL=false;applyData(...raw);CACHEDAT=Date.now();IDB.set('data',{at:CACHEDAT,raw});offBar();
  if(!location.hash.startsWith('#/admin'))route();
-}catch(e){console.error('DB',e)}}
+}catch(e){console.error('DB',e);NETFAIL=true;offBar()}}
 const PICK='— বাছুন —';
 const DISTS=['ঢাকা','গাজীপুর','কিশোরগঞ্জ','মানিকগঞ্জ','মুন্সিগঞ্জ','নারায়ণগঞ্জ','নরসিংদী','টাঙ্গাইল','ফরিদপুর','গোপালগঞ্জ','মাদারীপুর','রাজবাড়ী','শরীয়তপুর','চট্টগ্রাম','কক্সবাজার','কুমিল্লা','ফেনী','ব্রাহ্মণবাড়িয়া','রাঙ্গামাটি','নোয়াখালী','চাঁদপুর','লক্ষ্মীপুর','খাগড়াছড়ি','বান্দরবান','রাজশাহী','বগুড়া','জয়পুরহাট','নওগাঁ','নাটোর','চাঁপাইনবাবগঞ্জ','পাবনা','সিরাজগঞ্জ','খুলনা','বাগেরহাট','চুয়াডাঙ্গা','যশোর','ঝিনাইদহ','কুষ্টিয়া','মাগুরা','মেহেরপুর','নড়াইল','সাতক্ষীরা','বরিশাল','বরগুনা','ভোলা','ঝালকাঠি','পটুয়াখালী','পিরোজপুর','সিলেট','হবিগঞ্জ','মৌলভীবাজার','সুনামগঞ্জ','রংপুর','দিনাজপুর','গাইবান্ধা','কুড়িগ্রাম','লালমনিরহাট','নীলফামারী','পঞ্চগড়','ঠাকুরগাঁও','ময়মনসিংহ','জামালপুর','নেত্রকোণা','শেরপুর'];
 const METROS=['ঢাকা মহানগর উত্তর','ঢাকা মহানগর দক্ষিণ','চট্টগ্রাম মহানগর','রাজশাহী মহানগর','খুলনা মহানগর','বরিশাল মহানগর','সিলেট মহানগর','রংপুর মহানগর','ময়মনসিংহ মহানগর','গাজীপুর মহানগর','নারায়ণগঞ্জ মহানগর','কুমিল্লা মহানগর'];
@@ -622,8 +633,9 @@ async function adminRender(){const el=$('#adm');if(!el)return;
 function buildNav(){const P=PAGES.filter(p=>p[0]==='/'||!hid(p[0])).flatMap(p=>p[0]==='/committees'?[p,['/committees/division','বিভাগীয় কমিটি']]:[p]);$('#navl').innerHTML=P.map(p=>`<li><a href="#${p[0]}">${p[1]}</a></li>`).join('');$('#fl').innerHTML=P.filter(p=>p[0]!=='/').map(p=>`<a href="#${p[0]}">${p[1]}</a>`).join('')}buildNav();
 
 $('#mb').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#mb').setAttribute('aria-expanded',o)};
-applySite();addEventListener('hashchange',route);addEventListener('hashchange',track);route();loadAll();track();intro();
+applySite();addEventListener('hashchange',route);addEventListener('hashchange',track);route();loadCache();loadAll();track();intro();
 
+addEventListener('offline',offBar);addEventListener('online',()=>{NETFAIL=false;loadAll()});
 let DIP=null;
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();DIP=e;const b=document.querySelector('#inst');if(b)b.hidden=false});
 function zpInstall(){if(!DIP)return;DIP.prompt();DIP.userChoice.finally(()=>{DIP=null;const b=document.querySelector('#inst');if(b)b.hidden=true})}
