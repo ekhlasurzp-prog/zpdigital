@@ -625,7 +625,7 @@ async function adminRender(){const el=$('#adm');if(!el)return;
   +'<h3>বর্তমান প্রশাসক</h3>'+pr.data.map(x=>`<div class="card" style="margin-bottom:10px"><b>${esc(x.full_name||'')}</b> ${esc(x.email||'')}<br>${sa&&x.id!==A.user.id?`<select onchange="adminRole('${x.id}',this.value)">${ro(x.role)}</select> <button class="btn o" style="min-height:40px" onclick="adminRemove('${x.id}')">সরিয়ে দিন</button>`:ROLE[x.role]}</div>`).join('');return}
  if(A.tab==='site'){const r=await sb.from('site_settings').select('*').eq('id',1).maybeSingle();
   if(r.error){el.innerHTML=h+'<p>সেটিংস টেবিল পাওয়া যায়নি। আগে SQL চালান।</p>';return}const d=r.data||{};
-  el.innerHTML=h+`<form class="fm card" onsubmit="adminSaveSite(event)"><h3>সাইট সেটিংস</h3><label>সাইটের নাম<input name="site_name" value="${esc(d.site_name||SITE.name)}" required></label><label>স্লোগান<input name="slogan" value="${esc(d.slogan||SITE.slogan)}"></label><label>যোগাযোগ (প্রতি লাইনে একটি: নাম | তথ্য)<textarea name="contacts" placeholder="ফোন | ০১XXXXXXXXX&#10;ইমেইল | name@example.com&#10;ঠিকানা | ...">${esc(d.contacts||'')}</textarea></label><p>লাইন যোগ করলে যোগ হবে, লাইন মুছলে মুছে যাবে। সব মুছলে সাইট থেকে যোগাযোগ অংশ লুকিয়ে যাবে।</p><p><b>সাইটে যে পাতা ব্যবহারকারীরা দেখবেন</b><br>টিক তুলে দিলে পাতাটি সবার কাছ থেকে লুকিয়ে যাবে। আবার টিক দিলে ফিরে আসবে।</p>${PAGES.slice(1).map(p=>`<label style="display:flex;gap:12px;align-items:center;margin:6px 0"><input type="checkbox" name="show" value="${p[0]}" style="width:26px;min-height:26px"${(d.hidden_pages||'').split(',').includes(p[0])?'':' checked'}> ${p[1]}</label>`).join('')}<p><b>শুরুর এনিমেশন ভিডিও</b><br>সাইটে ঢোকার আগে যে ভিডিও চলে। MP4 ফাইল দিন, সর্বোচ্চ ১০ MB (২–৫ MB হলে দ্রুত চলে)।</p><label style="display:flex;gap:12px;align-items:center"><input type="checkbox" name="intro_on" style="width:26px;min-height:26px"${d.intro_off?'':' checked'}> শুরুর এনিমেশন চালু থাকবে</label><label>নতুন ভিডিও (MP4)<input type="file" name="intro_file" accept="video/mp4"></label><input type="hidden" name="intro_url" value="${esc(d.intro_url||'')}"><p>${d.intro_url?'বর্তমানে আপনার দেওয়া ভিডিও চলছে।':'বর্তমানে সাধারণ (ডিফল্ট) ভিডিও চলছে।'}</p>${d.intro_url?'<label style="display:flex;gap:12px;align-items:center"><input type="checkbox" name="intro_reset" style="width:26px;min-height:26px"> সাধারণ ভিডিওতে ফিরে যান</label>':''}<video src="${esc(su(d.intro_url)||'intro.mp4')}" controls playsinline muted preload="metadata" style="width:100%;max-width:240px;border-radius:12px;margin:8px 0"></video><label>নতুন লোগো (চৌকো JPG, PNG বা WEBP)<input type="file" name="logo_file" accept="image/jpeg,image/png,image/webp"></label><p style="color:var(--mut);font-size:14px">নাম ও লোগো বদলালে সাইট ও অ্যাপের ভেতরের সব জায়গায় (হেডার, শুরুর পাতা, ফুটার, ট্যাবের শিরোনাম) নিজে বদলে যায়। ফোনের হোম স্ক্রিনের অ্যাপ-আইকন ও নাম বদলাতে আলাদা আইকন ফাইল লাগে।</p><input type="hidden" name="logo_url" value="${esc(d.logo_url||'')}"><p>বর্তমান লোগো:</p><img src="${esc(su(d.logo_url)||IMG.logo)}" alt="" style="width:96px;border-radius:16px"><div class="bar2"><button class="btn">সংরক্ষণ</button></div></form>`;return}
+  el.innerHTML=h+`<form class="fm card" onsubmit="adminSaveSite(event)"><h3>সাইট সেটিংস</h3><label>সাইটের নাম<input name="site_name" value="${esc(d.site_name||SITE.name)}" required></label><label>স্লোগান<input name="slogan" value="${esc(d.slogan||SITE.slogan)}"></label><label>যোগাযোগ (প্রতি লাইনে একটি: নাম | তথ্য)<textarea name="contacts" placeholder="ফোন | ০১XXXXXXXXX&#10;ইমেইল | name@example.com&#10;ঠিকানা | ...">${esc(d.contacts||'')}</textarea></label><p>লাইন যোগ করলে যোগ হবে, লাইন মুছলে মুছে যাবে। সব মুছলে সাইট থেকে যোগাযোগ অংশ লুকিয়ে যাবে।</p><p><b>সাইটে যে পাতা ব্যবহারকারীরা দেখবেন</b><br>টিক তুলে দিলে পাতাটি সবার কাছ থেকে লুকিয়ে যাবে। আবার টিক দিলে ফিরে আসবে।</p>${PAGES.slice(1).map(p=>`<label style="display:flex;gap:12px;align-items:center;margin:6px 0"><input type="checkbox" name="show" value="${p[0]}" style="width:26px;min-height:26px"${(d.hidden_pages||'').split(',').includes(p[0])?'':' checked'}> ${p[1]}</label>`).join('')}<p><b>শুরুর এনিমেশন ভিডিও</b><br>সাইটে ঢোকার আগে যে ভিডিও চলে। MP4 ফাইল দিন, সর্বোচ্চ ১০ MB (২–৫ MB হলে দ্রুত চলে)।</p><label style="display:flex;gap:12px;align-items:center"><input type="checkbox" name="intro_on" style="width:26px;min-height:26px"${d.intro_off?'':' checked'}> শুরুর এনিমেশন চালু থাকবে</label><label>নতুন ভিডিও (MP4)<input type="file" name="intro_file" accept="video/mp4"></label><input type="hidden" name="intro_url" value="${esc(d.intro_url||'')}"><p>${d.intro_url?'বর্তমানে আপনার দেওয়া ভিডিও চলছে।':'বর্তমানে সাধারণ (ডিফল্ট) ভিডিও চলছে।'}</p>${d.intro_url?'<label style="display:flex;gap:12px;align-items:center"><input type="checkbox" name="intro_reset" style="width:26px;min-height:26px"> সাধারণ ভিডিওতে ফিরে যান</label>':''}<video src="${esc(su(d.intro_url)||'intro.mp4')}" controls playsinline muted preload="metadata" style="width:100%;max-width:240px;border-radius:12px;margin:8px 0"></video><label>নতুন লোগো (চৌকো JPG, PNG বা WEBP)<input type="file" name="logo_file" accept="image/jpeg,image/png,image/webp"></label><p style="color:var(--mut);font-size:14px">নাম ও লোগো বদলালে সাইট ও অ্যাপের ভেতরের সব জায়গায় (হেডার, শুরুর পাতা, ফুটার, ট্যাবের শিরোনাম) নিজে বদলে যায়। ফোনের হোম স্ক্রিনের অ্যাপ-আইকন ও নাম বদলাতে আলাদা আইকন ফাইল লাগে।</p><input type="hidden" name="logo_url" value="${esc(d.logo_url||'')}"><p>বর্তমান লোগো:</p><img src="${esc(su(d.logo_url)||IMG.logo)}" alt="" style="width:96px;border-radius:16px"><div class="bar2"><button class="btn">সংরক্ষণ</button></div></form><div class="card" style="margin-top:12px"><h3>ZP AI মেমোরি</h3><p>ওয়েবসাইটের নতুন বা বদলানো তথ্য ZP AI-কে জানাতে নিচের বোতামে চাপুন।</p><div class="bar2"><button type="button" class="btn" onclick="adminSyncAI(this)">AI মেমোরি আপডেট করুন</button></div><p id="ai-sync-msg"></p></div>`;return}
  if(A.edit!==undefined){el.innerHTML=h+formHtml(A.edit);if(A.tab==='committee')geoUpd(true);return}
  const t=T[A.tab],r=await sb.from(t.tb).select(A.tab==='committee'?'*,committee_members(*)':'*').order('created_at',{ascending:false});
  if(r.error){el.innerHTML=h+'<p>তথ্য আনা যায়নি: '+esc(r.error.message)+'</p>';return}
@@ -633,6 +633,39 @@ async function adminRender(){const el=$('#adm');if(!el)return;
  h+=r.data.length?r.data.map(x=>`<div class="card" style="margin-bottom:12px"><span class="tag">${STL[x.status]}</span><h3>${esc(x[t.n])}</h3>${x.level?`<p>${esc((x.org_group||'')+' • '+x.level+(x.district?' • '+x.district:'')+(x.metro?' • '+x.metro:'')+(x.upazila?' • '+x.upazila:''))}</p>`:''}<div class="bar2"><button class="btn o" onclick="adminEdit('${x.id}')">সম্পাদনা</button>${A.role==='super_admin'?`<button class="btn o" onclick="adminDel('${x.id}')">মুছুন</button>`:''}</div></div>`).join(''):'<div class="empty">এখনো কিছু যোগ হয়নি।</div>';
  el.innerHTML=h}
 function buildNav(){const P=PAGES.filter(p=>p[0]==='/'||!hid(p[0])).flatMap(p=>p[0]==='/committees'?[p,['/committees/division','বিভাগীয় কমিটি']]:[p]);$('#navl').innerHTML=P.map(p=>`<li><a href="#${p[0]}">${p[1]}</a></li>`).join('');$('#fl').innerHTML=P.filter(p=>p[0]!=='/').map(p=>`<a href="#${p[0]}">${p[1]}</a>`).join('')}buildNav();
+
+// ZP AI Knowledge Base Sync function for Admin Panel
+async function adminSyncAI(btn){
+  if(!sb)return;
+  const stEl=document.getElementById('ai-sync-msg');
+  btn.disabled=true;
+  const oldTxt=btn.textContent;
+  btn.textContent='সিঙ্ক হচ্ছে...';
+  if(stEl)stEl.textContent='ওয়েবসাইটের প্রকাশিত তথ্য AI মেমোরিতে আপডেট করা হচ্ছে...';
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    const token=session?session.access_token:SB_KEY;
+    let totalEmbedded=0,left=1;
+    while(left>0){
+      const res=await fetch(`${SB_URL}/functions/v1/kb-sync`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:`Bearer ${token}`},
+        body:JSON.stringify({action:'sync'})
+      });
+      const data=await res.json();
+      if(!res.ok||data.error)throw new Error(data.error||'Sync failed');
+      totalEmbedded+=(data.embedded||0);
+      left=data.left||0;
+      if(stEl)stEl.textContent=`আপডেট হয়েছে: ${totalEmbedded}টি অংশ (বাকি: ${left}টি)...`;
+    }
+    if(stEl)stEl.textContent=`✅ সফলভাবে সম্পন্ন হয়েছে! মোট ${totalEmbedded}টি নতুন/আপডেট তথ্য ZP AI-তে যুক্ত হয়েছে।`;
+  }catch(err){
+    if(stEl)stEl.textContent='❌ সমস্যা হয়েছে: '+(err.message||err);
+  }finally{
+    btn.disabled=false;
+    btn.textContent=oldTxt;
+  }
+}
 
 $('#mb').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#mb').setAttribute('aria-expanded',o)};
 applySite();addEventListener('hashchange',route);addEventListener('hashchange',track);route();loadCache();loadAll();track();intro();
@@ -644,6 +677,164 @@ function zpInstall(){if(!DIP)return;DIP.prompt();DIP.userChoice.finally(()=>{DIP
 addEventListener('appinstalled',()=>{const b=document.querySelector('#inst');if(b)b.hidden=true});
 try{if(/iphone|ipad|ipod/i.test(navigator.userAgent||'')&&!matchMedia('(display-mode: standalone)').matches){const h=document.querySelector('#ios');if(h)h.hidden=false}}catch(e){}
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+
+<!-- ZP AI Floating Chat Widget -->
+<style>
+  #zp-ai-btn {
+    position: fixed; bottom: 20px; right: 20px; z-index: 999;
+    background: linear-gradient(135deg, #0a4a2a, #14693c); color: #fff;
+    border: 2px solid #c9a227; border-radius: 50px; padding: 11px 18px;
+    font: 600 15px "Hind Siliguri", system-ui, sans-serif; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    display: flex; align-items: center; gap: 8px; transition: transform 0.2s;
+  }
+  #zp-ai-btn:hover { transform: scale(1.04); }
+  #zp-ai-box {
+    position: fixed; bottom: 78px; right: 20px; z-index: 999;
+    width: 360px; max-width: calc(100vw - 32px); height: 500px; max-height: 75vh;
+    background: #0d2619; color: #eef3ee; border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65);
+    display: none; flex-direction: column; overflow: hidden;
+    border: 1.5px solid #c9a227; font-family: "Hind Siliguri", system-ui, sans-serif;
+  }
+  #zp-ai-header {
+    background: linear-gradient(135deg, #0a3d22, #06301b); color: #fff;
+    padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1.5px solid #c9a227;
+  }
+  #zp-ai-header h4 { margin: 0; font-size: 16px; color: #e9d27a; }
+  #zp-ai-header span { font-size: 12px; color: #cfe3d5; display: block; }
+  #zp-ai-close { background: none; border: none; color: #e9d27a; font-size: 24px; cursor: pointer; line-height: 1; }
+  #zp-ai-msgs {
+    flex: 1; padding: 14px; overflow-y: auto; display: flex;
+    flex-direction: column; gap: 10px; background: #07170f;
+  }
+  .zp-msg {
+    max-width: 86%; padding: 10px 13px; border-radius: 12px;
+    font-size: 15px; line-height: 1.55; white-space: pre-wrap; word-wrap: break-word;
+  }
+  .zp-user { align-self: flex-end; background: #0a4a2a; color: #fff; border: 1px solid #2f8f57; border-bottom-right-radius: 2px; }
+  .zp-bot { align-self: flex-start; background: #0d2619; color: #eef3ee; border: 1px solid #1f4030; border-bottom-left-radius: 2px; }
+  .zp-sources { margin-top: 8px; padding-top: 6px; border-top: 1px dashed #1f4030; font-size: 12px; }
+  .zp-sources a { display: inline-block; margin: 2px 4px 2px 0; padding: 2px 8px; background: rgba(201,162,39,.16); color: #f2d77a; border: 1px solid rgba(201,162,39,.45); border-radius: 6px; text-decoration: none; }
+  .zp-sources a.web { background: rgba(46,196,182,.15); color: #7ee8df; border-color: rgba(46,196,182,.45); }
+  #zp-ai-form {
+    display: flex; padding: 10px; background: #0a3d22; border-top: 1px solid #1f4030; gap: 6px;
+  }
+  #zp-ai-input {
+    flex: 1; border: 1px solid #1f4030; border-radius: 10px; padding: 9px 12px;
+    font: inherit; font-size: 15px; background: #07170f; color: #fff; outline: none;
+  }
+  #zp-ai-input:focus { border-color: #c9a227; }
+  #zp-ai-send {
+    background: #d4141c; color: #fff; border: none; border-radius: 10px;
+    padding: 0 15px; font: 600 15px "Hind Siliguri", system-ui, sans-serif; cursor: pointer;
+  }
+</style>
+
+<button id="zp-ai-btn" type="button">✨ ZP AI-কে জিজ্ঞাসা করুন</button>
+
+<div id="zp-ai-box" role="dialog" aria-label="ZP AI চ্যাট">
+  <div id="zp-ai-header">
+    <div>
+      <h4>ZP AI সহকারী</h4>
+      <span>ওয়েবসাইট ও অনলাইন তথ্য যাচাইকৃত</span>
+    </div>
+    <button id="zp-ai-close" type="button" aria-label="বন্ধ করুন">&times;</button>
+  </div>
+  <div id="zp-ai-msgs">
+    <div class="zp-msg zp-bot">আসসালামু আলাইকুম! আমি ZP AI। আমাদের ওয়েবসাইটের বই, নেতা, কমিটি, ইভেন্ট কিংবা বাইরের যেকোনো তথ্য সম্পর্কে আমাকে প্রশ্ন করতে পারেন।</div>
+  </div>
+  <form id="zp-ai-form">
+    <input id="zp-ai-input" type="text" placeholder="আপনার প্রশ্ন লিখুন..." required />
+    <button id="zp-ai-send" type="submit">পাঠান</button>
+  </form>
+</div>
+
+<script>
+  (function () {
+    const AI_URL = "https://xyxyycqogjdobzipnjde.supabase.co";
+    const AI_KEY = "sb_publishable_AwAbgt6_qx78w4RKaj5N4g_PyBmuUat";
+
+    const btn = document.getElementById("zp-ai-btn");
+    const box = document.getElementById("zp-ai-box");
+    const closeBtn = document.getElementById("zp-ai-close");
+    const form = document.getElementById("zp-ai-form");
+    const input = document.getElementById("zp-ai-input");
+    const msgs = document.getElementById("zp-ai-msgs");
+    const history = [];
+
+    btn.onclick = () => {
+      box.style.display = box.style.display === "flex" ? "none" : "flex";
+      if (box.style.display === "flex") input.focus();
+    };
+    closeBtn.onclick = () => (box.style.display = "none");
+
+    function addMsg(text, isUser, siteSources = [], webSources = []) {
+      const div = document.createElement("div");
+      div.className = "zp-msg " + (isUser ? "zp-user" : "zp-bot");
+      div.textContent = text;
+
+      if (!isUser && (siteSources.length || webSources.length)) {
+        const srcDiv = document.createElement("div");
+        srcDiv.className = "zp-sources";
+        siteSources.forEach((s) => {
+          const a = document.createElement("a");
+          a.href = s.page;
+          a.textContent = "📄 " + s.title;
+          a.onclick = () => { if (window.innerWidth < 700) box.style.display = "none"; };
+          srcDiv.appendChild(a);
+        });
+        webSources.forEach((w) => {
+          const a = document.createElement("a");
+          a.className = "web";
+          a.href = w.url;
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.textContent = "🌐 " + w.title;
+          srcDiv.appendChild(a);
+        });
+        div.appendChild(srcDiv);
+      }
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+      return div;
+    }
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const q = input.value.trim();
+      if (!q) return;
+      input.value = "";
+      addMsg(q, true);
+      const loading = addMsg("তথ্য যাচাই করা হচ্ছে...", false);
+
+      try {
+        const res = await fetch(`${AI_URL}/functions/v1/kb-chat`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: AI_KEY,
+            Authorization: `Bearer ${AI_KEY}`,
+          },
+          body: JSON.stringify({ message: q, history }),
+        });
+        const data = await res.json();
+        loading.remove();
+
+        if (data.error) {
+          addMsg("দুঃখিত: " + data.error, false);
+        } else {
+          addMsg(data.reply, false, data.siteSources, data.webSources);
+          history.push({ role: "user", text: q }, { role: "model", text: data.reply });
+        }
+      } catch (err) {
+        loading.remove();
+        addMsg("নেটওয়ার্ক সমস্যা হয়েছে, আবার চেষ্টা করুন।", false);
+      }
+    };
+  })();
 </script>
 </body>
 </html>
