@@ -467,17 +467,17 @@ function aiOpenChat(i){AIH.cur=AIH.chats[i].id;aiPersist();const p=document.quer
 function aiDel(i){AIH.chats.splice(i,1);if(!AIH.chats.find(c=>c.id===AIH.cur))AIH.cur=null;aiPersist();const p=document.querySelector('#aihist');if(p){p.remove();aiHist()}aiRender()}
 function aiCopy(i){const c=aiCur(),t=c&&c.m[i]?c.m[i].c:'';const done=()=>{const b=document.querySelector('.cp[onclick="aiCopy('+i+')"]');if(b){b.textContent='কপি হয়েছে ✓';setTimeout(()=>b.textContent='কপি',1500)}};
  try{navigator.clipboard.writeText(t).then(done,()=>{})}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(x){}a.remove()}}
-function aiErr(st,j){const e=j&&j.error;if(e==='off')return 'ZP AI এখন বন্ধ আছে।';if(e==='limit'||e==='busy'||st===429)return 'এখন অনেক প্রশ্ন আসছে বা আজকের সীমা শেষ। কিছুক্ষণ পরে আবার চেষ্টা করুন।';if(e==='empty')return 'প্রশ্ন লিখুন।';return 'ZP AI এই মুহূর্তে উত্তর দিতে পারছে না। একটু পরে আবার চেষ্টা করুন। (কোড: '+((j&&j.code)||('http'+st))+')'}
+function aiErr(st,j){const e=j&&j.error;if(e==='off')return 'ZP AI এখন বন্ধ আছে।';if(e==='limit'||e==='busy'||st===429)return 'এখন অনেক প্রশ্ন আসছে বা আজকের সীমা শেষ। কিছুক্ষণ পরে আবার চেষ্টা করুন।';if(e==='empty')return 'প্রশ্ন লিখুন।';if(/^T[A-Z]+$/.test((j&&j.code)||''))return 'উত্তর আসতে বেশি দেরি হচ্ছে। আবার চেষ্টা করুন। (কোড: '+j.code+')';return 'ZP AI এই মুহূর্তে উত্তর দিতে পারছে না। একটু পরে আবার চেষ্টা করুন। (কোড: '+((j&&j.code)||('http'+st))+')'}
 async function aiSend(q0){if(AIBUSY)return;const ta=document.querySelector('#aiq');const q=String(q0||(ta&&ta.value)||'').trim().slice(0,600);if(!q)return;
  AIH=AIH||aiLoad();
  if(navigator.onLine===false){let c0=aiCur();if(!c0){c0={id:Date.now().toString(36),t:q.slice(0,40),at:Date.now(),m:[]};AIH.chats.unshift(c0);AIH.cur=c0.id}c0.m.push({r:'u',c:q},{r:'e',c:'ইন্টারনেট নেই। ZP AI ব্যবহার করতে ইন্টারনেট লাগে।'});if(ta)ta.value='';aiPersist();aiRender();return}
  let c=aiCur();if(!c){c={id:Date.now().toString(36),t:q.slice(0,40),at:Date.now(),m:[]};AIH.chats.unshift(c);AIH.cur=c.id}
  c.m.push({r:'u',c:q});if(ta){ta.value='';ta.style.height='auto'}AIBUSY=true;aiPersist();aiRender();
  const ms=c.m.slice(0,-1),hist=[];for(let k=0;k<ms.length-1;k++){if(ms[k].r==='u'&&ms[k+1].r==='a'){hist.push({role:'user',text:String(ms[k].c).slice(0,600)},{role:'model',text:String(ms[k+1].c).slice(0,600)});k++}}
- try{const r=await fetch(SB_URL+'/functions/v1/zp-ai',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY},body:JSON.stringify({question:q,history:hist.slice(-6)})});let j={};try{j=await r.json()}catch(e){}
+ try{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),70000);const r=await fetch(SB_URL+'/functions/v1/zp-ai',{method:'POST',signal:ac.signal,headers:{'Content-Type':'application/json',apikey:SB_KEY},body:JSON.stringify({question:q,history:hist.slice(-6)})});clearTimeout(tm);let j={};try{j=await r.json()}catch(e){}
   if(r.ok&&j.answer){c.m.push({r:'a',c:j.answer,s:j.sources||[]});if(j.notice){AINOTE=j.notice;const n=document.querySelector('#ain');if(n)n.textContent=AINOTE}}
   else c.m.push({r:'e',c:aiErr(r.status,j)})
- }catch(e){c.m.push({r:'e',c:'সংযোগে সমস্যা হয়েছে। ইন্টারনেট দেখে আবার চেষ্টা করুন।'})}
+ }catch(e){c.m.push({r:'e',c:(e&&e.name==='AbortError')?'উত্তর আসতে বেশি দেরি হচ্ছে। আবার চেষ্টা করুন। (কোড: timeout)':'সংযোগে সমস্যা হয়েছে। ইন্টারনেট দেখে আবার চেষ্টা করুন।'})}
  AIBUSY=false;c.at=Date.now();aiPersist();aiRender()}
 const yid=u=>{const m=/(?:youtu\.be\/|youtube\.com\/(?:live\/|embed\/|shorts\/)|[?&]v=)([A-Za-z0-9_-]{11})/.exec(u||'');return m?m[1]:''};
 const fdd=v=>v?new Date(v).toLocaleDateString('bn-BD',{dateStyle:'medium'}):'';
